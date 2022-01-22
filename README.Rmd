@@ -20,6 +20,10 @@ knitr::opts_chunk$set(
 
 This package implements the multi-scale Truchet tiles of [Christopher Carlson](https://archive.bridgesmathart.org/2018/bridges2018-39.html) as explained in this [blog post](https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/). This implementation uses the package [{sf}]() to create and manipulate spatial objects. Two functions are used to create tiles and then to arrange the tiles in a mosaic. Since the tiles and mosaics are simple features, they can be plotted using [{ggplot2}]() and `geom_sf()`. In addition, further manipulations of the tiles (such as buffering) can be done using the functionality of {sf}.
 
+<!--
+Also check http://cambolbro.com/cv/index.html
+-->
+
 ## Installation
 
 You can install the development version of truchet from [GitHub](https://github.com/) with:

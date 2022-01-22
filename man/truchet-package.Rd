@@ -4,9 +4,9 @@
 \name{truchet-package}
 \alias{truchet}
 \alias{truchet-package}
-\title{truchet: What the Package Does (One Line, Title Case)}
+\title{truchet: Package for creating Truchet tiles and random mosaics}
 \description{
-What the package does (one paragraph).
+This package includes utility functions to create Truchet tiles and arrange them to create mosaics.
 }
 \seealso{
 Useful links:
@@ -16,7 +16,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Antonio Páez \email{paezha@mcmaster.ca} (\href{https://orcid.org/0000-0001-6912-9919}{ORCID})
 
 }
 \keyword{internal}

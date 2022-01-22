@@ -17,6 +17,10 @@ features, they can be plotted using [{ggplot2}]() and `geom_sf()`. In
 addition, further manipulations of the tiles (such as buffering) can be
 done using the functionality of {sf}.
 
+<!--
+Also check http://cambolbro.com/cv/index.html
+-->
+
 ## Installation
 
 You can install the development version of truchet from
