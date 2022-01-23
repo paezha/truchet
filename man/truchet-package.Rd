@@ -6,6 +6,8 @@
 \alias{truchet-package}
 \title{truchet: Package for creating Truchet tiles and random mosaics}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 This package includes utility functions to create Truchet tiles and arrange them to create mosaics.
 }
 \seealso{

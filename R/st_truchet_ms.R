@@ -31,11 +31,17 @@ st_truchet_ms <- function(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1,
     prop = 1
   }
 
-  # Number of different tiles at each scale
-  n_1 <- max(t1$tile)
-  if(!is.null(t2)){
-    n_2 <- max(t2$tile)
+  # Find the number of different tiles at each scale
+  n_1 <- unique(t1$tile)
+  if(length(n_1) == 1){
+    n_1 <- c(n_1, n_1)
   }
+  if(!is.null(t2)){
+    n_2 <- unique(t2$tile)
+    if(length(n_2) == 1){
+      n_1 <- c(n_2, n_2)
+    }
+    }
 
   # Create grid for placing tiles
   df <- data.frame(expand.grid(x = seq(xlim[1], xlim[2], 1),
@@ -64,7 +70,8 @@ st_truchet_ms <- function(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1,
     if(stats::rbinom(1, 1, p = prop) == 1){
       mosaic <- rbind(mosaic,
                       t1 %>%
-                        dplyr::filter(.data$tile == sample.int(n_1, 1)) %>%
+                        # Randomly sample from available tiles at this scale
+                        dplyr::filter(.data$tile == sample(n_1, 1)) %>%
                         dplyr::mutate(group = i,
                                geometry = .data$geometry + c(df[i, 1], df[i, 2])) %>%
                         sf::st_as_sf())
@@ -72,22 +79,26 @@ st_truchet_ms <- function(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1,
     }else{
       mosaic <- rbind(mosaic,
                       t2 %>%
-                        dplyr::filter(.data$tile == sample.int(n_2, 1)) %>%
+                        # Randomly sample from available tiles at this scale
+                        dplyr::filter(.data$tile == sample(n_2, 1)) %>%
                         dplyr::mutate(group = i,
                                geometry = .data$geometry + c(df[i, 1] - 0.25, df[i, 2] - 0.25)) %>%
                         sf::st_as_sf(),
                       t2 %>%
-                        dplyr::filter(.data$tile == sample.int(2, 1)) %>%
+                        # Randomly sample from available tiles at this scale
+                        dplyr::filter(.data$tile == sample(2, 1)) %>%
                         dplyr::mutate(group = i,
                                geometry = .data$geometry + c(df[i, 1] - 0.25, df[i, 2] + 0.25)) %>%
                         sf::st_as_sf(),
                       t2 %>%
-                        dplyr::filter(.data$tile == sample.int(2, 1)) %>%
+                        # Randomly sample from available tiles at this scale
+                        dplyr::filter(.data$tile == sample(2, 1)) %>%
                         dplyr::mutate(group = i,
                                geometry = .data$geometry + c(df[i, 1] + 0.25, df[i, 2] - 0.25)) %>%
                         sf::st_as_sf(),
                       t2 %>%
-                        dplyr::filter(.data$tile == sample.int(2, 1)) %>%
+                        # Randomly sample from available tiles at this scale
+                        dplyr::filter(.data$tile == sample(2, 1)) %>%
                         dplyr::mutate(group = i,
                                geometry = .data$geometry + c(df[i, 1] + 0.25, df[i, 2] + 0.25)) %>%
                         sf::st_as_sf())
