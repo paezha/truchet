@@ -53,6 +53,8 @@ st_truchet_ms <- function(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1,
     # Create grid for placing tiles using the limits provided xlim and ylim
     df <- data.frame(expand.grid(x = seq(xlim[1], xlim[2], 1),
                                  y = seq(ylim[1], ylim[2], 1)))
+  }else{
+    df_internal <- FALSE
   }
 
   # Initialize mosaic
