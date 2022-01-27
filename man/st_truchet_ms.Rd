@@ -4,7 +4,14 @@
 \alias{st_truchet_ms}
 \title{Truchet mosaics}
 \usage{
-st_truchet_ms(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1, 12))
+st_truchet_ms(
+  t1,
+  t2 = NULL,
+  prop = 0.5,
+  xlim = c(1, 8),
+  ylim = c(1, 12),
+  df = NULL
+)
 }
 \arguments{
 \item{t1}{a \code{sf} data frame with truchet tile(s) produced by \link{st_truchet_p} at scale 1; these tiles are squares with sides of length 1}
@@ -13,9 +20,11 @@ st_truchet_ms(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1, 12))
 
 \item{prop}{a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1}
 
-\item{xlim}{a numeric vector of length 2 giving the range of the x coordinates of the mosaic}
+\item{xlim}{a numeric vector of length 2 giving the range of the x coordinates of the mosaic (ignored if argument \code{df} is an input)}
 
-\item{ylim}{a numeric vector of length 2 giving the range of the y coordinates of the mosaic}
+\item{ylim}{a numeric vector of length 2 giving the range of the y coordinates of the mosaic (ignored if argument \code{df} is an input)}
+
+\item{df}{a data frame with the following columns: x and y (the coordinates of the tiles in a 1 by 1 grid) and scale_p (the scale of the tile to be placed at each coordinate)}
 }
 \value{
 A list with two objects of type \code{sf} representing the container for the mosaic and the tiles arranged as a mosaic
