@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="index.html">truchet</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,160 +92,121 @@ Also check http://cambolbro.com/cv/index.html
 <span class="co">#&gt; The following objects are masked from 'package:base':</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;     intersect, setdiff, setequal, union</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://paezha.github.io/truchet/">truchet</a></span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="tiles">Tiles<a class="anchor" aria-label="anchor" href="#tiles"></a>
+</h2>
 <p>Currently, these are the tiles that are implemented.</p>
 <div class="section level3">
 <h3 id="tile-of-type-d-or--and--in-carlsons-notation">Tile of type “d” or “\” and “/” in Carlson’s notation.<a class="anchor" aria-label="anchor" href="#tile-of-type-d-or--and--in-carlsons-notation"></a>
 </h3>
-<p>Using function <code><a href="reference/st_truchet_p.html">st_truchet_p()</a></code> with type “d” produces a data frame with the elements of two tiles, diagonal left (“\”) and diagonal right (“/”). In addition to the geometry of the spatial elements of the tiles, the data frame includes identifiers for tiles (i.e., tile 1 is “\” and tile 2 is “/”) as well as colors.</p>
+<p>Using function <code><a href="reference/st_truchet_p.html">st_truchet_p()</a></code> with type “dl” or “dr” produces a simple features data frame with the elements of a single tile, diagonal left (“\”) or diagonal right (“/”). In addition to the geometry of the spatial elements of the tiles, the data frame includes identifiers for tiles (i.e., tile 1 is “\” and tile 2 is “/”) as well as colors. The function accepts the coordinates of the tile.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"d"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span>, y <span class="op">=</span> <span class="fl">4</span>, type <span class="op">=</span> <span class="st">"dl"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">tile</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="tile-of-type---or---and--in-carlsons-notation">Tile of type “-” or “-” and “|” in Carlson’s notation.<a class="anchor" aria-label="anchor" href="#tile-of-type---or---and--in-carlsons-notation"></a>
 </h3>
-<p>Using function <code><a href="reference/st_truchet_p.html">st_truchet_p()</a></code> with type “-” produces a data frame with the elements of two tiles, horizontal (“-”) and vertical (“|”). In addition to the geometry of the spatial elements of the tiles, the data frame includes identifiers for tiles (i.e., tile 1 is “|” and tile 2 is “-”) as well as colors.</p>
+<p>Using function <code><a href="reference/st_truchet_p.html">st_truchet_p()</a></code> with type “-” or “|” produces a simple features data frame with the elements of a single tile, horizontal (“-”) or vertical (“|”). In addition to the geometry of the spatial elements of the tiles, the data frame includes identifiers for tiles (i.e., tile 1 is “|” and tile 2 is “-”) as well as colors.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">tile</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="tile-of-type-f-in-carlsons-notation">Tile of type “f” in Carlson’s notation.<a class="anchor" aria-label="anchor" href="#tile-of-type-f-in-carlsons-notation"></a>
 </h3>
-<p>Using function <code><a href="reference/st_truchet_p.html">st_truchet_p()</a></code> with type “f” produces a data frame with the elements of four tiles, corresponding to “fne” (tile 1), “fsw” (tile 2), “fse” (tile 3) and “fnw” (tile 4) in Carlson’s notation. In addition to the geometry of the spatial elements of the tiles, the data frame includes identifiers for tiles and colors.</p>
+<p>Using function <code><a href="reference/st_truchet_p.html">st_truchet_p()</a></code> with type “fnw”, “fne”, “fse”, or “fsw” produces a data frame with the elements of a single tile. In addition to the geometry of the spatial elements of the tiles, the data frame includes identifiers for tiles and colors.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"f"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">tile</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R">  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span>, y <span class="op">=</span> <span class="fl">2</span>, type <span class="op">=</span> <span class="st">"fnw"</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">2</span>, y <span class="op">=</span> <span class="fl">2</span>, type <span class="op">=</span> <span class="st">"fne"</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">2</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"fse"</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"fsw"</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="scale-of-tiles">Scale of tiles<a class="anchor" aria-label="anchor" href="#scale-of-tiles"></a>
+<h2 id="assembling-mosaics">Assembling mosaics<a class="anchor" aria-label="anchor" href="#assembling-mosaics"></a>
 </h2>
-<p>Carlson’s tiles are designed to work at multiple scales. At the moment, the function to create tiles supports scale 1 (the tiles are squares with sides of length 1) and scale 1/2 (sides of tile are of length 1/2). Argument <code>scale_p</code> can be used to select the scale of the tiles (the default is 1). Notice that the colors alternate at each scale.</p>
+<p>Carlson’s tiles are designed to work at multiple scales. At the moment, the function to create tiles supports scale 1 (the tiles are squares with sides of length 1), scale 1/2 (sides of tile are of length 1/2), and scales 1/4 (sides of tile are of length 1/4). I don’t see much point doing tiles smaller than this, as their effect can be replicated with bigger tiles in bigger mosaics, and when used in multi-scale mosaics, the detail is lost at smaller scales. Argument <code>scale_p</code> is used to select the scale of the output tile (the default is 1). Notice that the colors alternate at each scale.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"d"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">tile</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"dl"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">2</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"dl"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">4</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"dl"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span>,
+          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="assembling-a-mosaic">Assembling a mosaic<a class="anchor" aria-label="anchor" href="#assembling-a-mosaic"></a>
 </h2>
-<p>The tiles can be used as inputs to create mosaics using function <code><a href="reference/st_truchet_ms.html">st_truchet_ms()</a></code></p>
-<p>This example shows a single tile:</p>
+<p>It is possible to assemble the tiles into a mosaic manually, but an additional function offers some functionality to do this task.</p>
+<p>Function <code><a href="reference/st_truchet_ms.html">st_truchet_ms()</a></code> can be used with all default parameters. The default uses tiles of type <code>dl</code> and <code>dr</code>, which are positioned at random (with equal probability) on the mosaic:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tiles_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"d"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tiles_1</span><span class="op">)</span>
-<span class="co">#&gt;      color            tile             geometry</span>
-<span class="co">#&gt;  Min.   :1.000   Min.   :1.0   MULTIPOLYGON:2  </span>
-<span class="co">#&gt;  1st Qu.:1.250   1st Qu.:1.0   POLYGON     :4  </span>
-<span class="co">#&gt;  Median :2.000   Median :1.5   epsg:NA     :0  </span>
-<span class="co">#&gt;  Mean   :1.667   Mean   :1.5                   </span>
-<span class="co">#&gt;  3rd Qu.:2.000   3rd Qu.:2.0                   </span>
-<span class="co">#&gt;  Max.   :2.000   Max.   :2.0</span></code></pre></div>
-<p>This type of tile produces two distinct tiles. Use only 1 type to create a mosaic:</p>
+<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
+          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
+<p>It is possible to create mosaics with tiles of different sizes; the parameters <code>p1</code>, <code>p2</code>, and <code>p3</code> control the proportion of tiles at each scale:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="va">tiles_1</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> 
-                          <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">tile</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Retrieve the “container” for the mosaic and the mosaic:</p>
+<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fl">0.6</span>, p2 <span class="op">=</span> <span class="fl">0.3</span>, p3 <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
+          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"></p>
+<p>Mosaics can use different types of tiles:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">container</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"container"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"mosaic"</span><span class="op">]</span><span class="op">]</span></code></pre></div>
-<p>Plot:</p>
+<code class="sourceCode R"><span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span>tiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"-"</span>, <span class="st">"|"</span>, <span class="st">"dl"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
+          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-8-1.png" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="tile-collection">Tile collection<a class="anchor" aria-label="anchor" href="#tile-collection"></a>
+</h2>
+<p>These are all the tiles currently implemented:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
-          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
-          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="co"># Extent of mosaic</span>
+<span class="va">xlim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">9</span><span class="op">)</span>
+<span class="va">ylim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>
+
+<span class="co"># Create a data frame with the spots for tiles</span>
+<span class="va">container</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="va">xlim</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">xlim</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>,
+                         y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dl"</span>, <span class="st">"dr"</span>, <span class="st">"-"</span>, <span class="st">"|"</span>, <span class="st">"fnw"</span>, <span class="st">"fne"</span>, <span class="st">"fsw"</span>, <span class="st">"fse"</span>, <span class="st">"ane"</span>, <span class="st">"asw"</span><span class="op">)</span>,
+                       levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dl"</span>, <span class="st">"dr"</span>, <span class="st">"-"</span>, <span class="st">"|"</span>, <span class="st">"fnw"</span>, <span class="st">"fne"</span>, <span class="st">"fsw"</span>, <span class="st">"fse"</span>, <span class="st">"ane"</span>, <span class="st">"asw"</span><span class="op">)</span>,
+                       ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Elements for assemblig the mosaic</span>
+<span class="va">x_c</span> <span class="op">&lt;-</span> <span class="va">container</span><span class="op">$</span><span class="va">x</span>
+<span class="va">y_c</span> <span class="op">&lt;-</span> <span class="va">container</span><span class="op">$</span><span class="va">y</span>
+<span class="va">type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">container</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
+<span class="va">scale_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">container</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">pmap_dfr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">x_c</span>, <span class="va">y_c</span>, <span class="va">type</span>, <span class="va">scale_p</span><span class="op">)</span>, <span class="va">st_truchet_p</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">container</span>,
+            <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>,
+                y <span class="op">=</span> <span class="va">y</span>,
+                label <span class="op">=</span> <span class="va">type</span><span class="op">)</span>,
+            nudge_y <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"></p>
-<p>Use the two tiles of this type</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="va">tiles_1</span><span class="op">)</span>
-
-<span class="va">container</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"container"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"mosaic"</span><span class="op">]</span><span class="op">]</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
-          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
-          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"></p>
-</div>
-<div class="section level2">
-<h2 id="combining-tile-types">Combining tile types<a class="anchor" aria-label="anchor" href="#combining-tile-types"></a>
-</h2>
-<p>Various tile types can be combined:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tiles_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"d"</span><span class="op">)</span>,
-                 <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span>
-                   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>tile <span class="op">=</span> <span class="va">tile</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Note that the identifier for the tile needs to be updated for the second set of tiles, so that the mosaic assembler knows all the different types of tiles provided. Create a mosaic and plot:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="va">tiles_1</span><span class="op">)</span>
-
-<span class="va">container</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"container"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"mosaic"</span><span class="op">]</span><span class="op">]</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
-          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
-          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-12-1.png" width="100%"></p>
-</div>
-<div class="section level2">
-<h2 id="combining-tiles-of-different-scales">Combining tiles of different scales<a class="anchor" aria-label="anchor" href="#combining-tiles-of-different-scales"></a>
-</h2>
-<p>Tiles of different scales can be combined in a single mosaic:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tiles_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"f"</span><span class="op">)</span>
-<span class="va">tiles_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_p.html">st_truchet_p</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"f"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<p>The tiles are placed on a regular grid with spacing 1-by-1. When tiles at scale 1/2 are used instead of 1 tile four of them are used to cover the unit square. The parameter <code>prop</code> controls the proportion of spots in the grid are used for tiles at scale 1 (the default is 0.5):</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="va">tiles_1</span>, <span class="va">tiles_2</span><span class="op">)</span>
-
-<span class="va">container</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"container"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"mosaic"</span><span class="op">]</span><span class="op">]</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
-          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
-          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-14-1.png" width="100%"></p>
-<p>In this next plot the proportion of tiles at scale 1 is increased:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="va">tiles_1</span>, <span class="va">tiles_2</span>, prop <span class="op">=</span> <span class="fl">0.85</span><span class="op">)</span>
-
-<span class="va">container</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"container"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"mosaic"</span><span class="op">]</span><span class="op">]</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
-          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
-          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-15-1.png" width="100%"></p>
-<p>And decreased:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span><span class="va">tiles_1</span>, <span class="va">tiles_2</span>, prop <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>
-
-<span class="va">container</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"container"</span><span class="op">]</span><span class="op">]</span>
-<span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="va">mosaic</span><span class="op">[[</span><span class="st">"mosaic"</span><span class="op">]</span><span class="op">]</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
-          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">color</span><span class="op">)</span><span class="op">)</span>,
-          color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-16-1.png" width="100%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

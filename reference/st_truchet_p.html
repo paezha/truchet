@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">truchet</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,15 +42,19 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">st_truchet_p</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"d"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">st_truchet_p</span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span>, y <span class="op">=</span> <span class="fl">0</span>, type <span class="op">=</span> <span class="st">"dl"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>type</dt>
+    <dl><dt>x</dt>
+<dd><p>A number with the x coordinate of the center of the tile</p></dd>
+<dt>y</dt>
+<dd><p>A number with the y coordinate of the center of the tile</p></dd>
+<dt>type</dt>
 <dd><p>A single character to designate a type of tile; currently supported options are "d", "-", "f", "a"</p></dd>
 <dt>scale_p</dt>
-<dd><p>A number to designate the scale of the tile; currently supported options are 1 and 1/2</p></dd>
+<dd><p>A number to designate the scale of the tile; currently supported options are 1, 1/2, and 1/4</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -64,38 +68,27 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">st_truchet_p</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 8 features and 2 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 4 features and 1 field</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: GEOMETRY</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -0.8333333 ymin: -0.8333333 xmax: 0.8333333 ymax: 0.8333333</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   color tile                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     1    1 MULTIPOLYGON (((-0.1666667 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     2    1 POLYGON ((-0.3333333 0, -0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     2    1 POLYGON ((0.6666667 0, 0.66...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     2    1 POLYGON ((-0.1666667 0.5, -...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     1    2 MULTIPOLYGON (((-0.1666667 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6     2    2 POLYGON ((0.1666667 0.5, 0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7     2    2 POLYGON ((0.1666667 -0.5, 0...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8     2    2 POLYGON ((0.5 0.1666667, 0....</span>
-<span class="r-in"><span class="fu">st_truchet_p</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"f"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 16 features and 2 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   color                       geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     1 MULTIPOLYGON (((-0.1666667 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     2 POLYGON ((0.1666667 0.5, 0....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     2 POLYGON ((0.1666667 -0.5, 0...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     2 POLYGON ((0.5 0.1666667, 0....</span>
+<span class="r-in"><span class="fu">st_truchet_p</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"fnw"</span>, scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 4 features and 1 field</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: GEOMETRY</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -0.4166667 ymin: -0.4166667 xmax: 0.4166667 ymax: 0.4166667</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    color tile                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      2    1 MULTIPOLYGON (((-0.08333333...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1    1 POLYGON ((-0.1666667 0, -0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1    1 POLYGON ((0.08333333 -0.25,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      1    1 POLYGON ((0.08329308 0.2521...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      2    2 MULTIPOLYGON (((-0.08334762...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      1    2 POLYGON ((0.08333333 0.25, ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      1    2 POLYGON ((0.3333333 0, 0.33...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      1    2 POLYGON ((-0.2347346 0.0829...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      2    3 MULTIPOLYGON (((-0.25 0.083...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     1    3 POLYGON ((0 0.1666667, -0.0...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   color                       geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     2 MULTIPOLYGON (((-0.2505454 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     1 POLYGON ((0.25 -0.08333333,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     1 POLYGON ((5.551115e-17 -0.3...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     1 POLYGON ((0.08296216 0.2347...</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
