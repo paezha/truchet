@@ -4,12 +4,16 @@
 \alias{st_truchet_p}
 \title{Truchet tiles made with polygons}
 \usage{
-st_truchet_p(type = "d", scale_p = 1)
+st_truchet_p(x = 0, y = 0, type = "dl", scale_p = 1)
 }
 \arguments{
+\item{x}{A number with the x coordinate of the center of the tile}
+
+\item{y}{A number with the y coordinate of the center of the tile}
+
 \item{type}{A single character to designate a type of tile; currently supported options are "d", "-", "f", "a"}
 
-\item{scale_p}{A number to designate the scale of the tile; currently supported options are 1 and 1/2}
+\item{scale_p}{A number to designate the scale of the tile; currently supported options are 1, 1/2, and 1/4}
 }
 \value{
 A list with one or more objects of type \code{sf} representing one or more tiles depending on type
@@ -22,5 +26,5 @@ For a discussion of multi-scale Truchet patterns see \url{https://christophercar
 }
 \examples{
 st_truchet_p(type = "-")
-st_truchet_p(type = "f", scale_p = 1/2)
+st_truchet_p(type = "fnw", scale_p = 1/2)
 }

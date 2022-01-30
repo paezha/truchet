@@ -1,168 +1,176 @@
-st_truchet_ms <- function(t1, t2 = NULL, prop = 0.5, xlim = c(1, 8), ylim = c(1, 12), df = NULL){
+st_truchet_ms <- function(df = NULL, p1 = 1, p2 = 0, p3 = 0, tiles = c("dr", "dl"), xlim = c(1, 3), ylim = c(1, 6)){
 
   #' Truchet mosaics
   #'
-  #' @param t1 a \code{sf} data frame with truchet tile(s) produced by \link{st_truchet_p} at scale 1; these tiles are squares with sides of length 1
-  #' @param t2 an (optional) \code{sf} data frame with truchet tile(s) produced by \link{st_truchet_p} at scale 1/2; these tiles are squares with sides of length 1/2
-  #' @param prop a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1
+  #' @param df an (optional) data frame with the following columns: x and y (the coordinates of the tiles in a 1 by 1 grid), tiles (characters with types of tiles to use for mosaic), scale_p (the scale of the tile to be placed at each coordinate)
+  #' @param p1 a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1 (the sum of p1, p2, p3 must be equal to one, or less to avoid empty spots in the mosaic)
+  #' @param p2 a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1/2
+  #' @param p3 a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1/4
+  #' @param tiles a character vector with types of tiles to use for mosaic (default: \code{c("dr", "dl")})
   #' @param xlim a numeric vector of length 2 giving the range of the x coordinates of the mosaic (ignored if argument \code{df} is an input)
   #' @param ylim a numeric vector of length 2 giving the range of the y coordinates of the mosaic (ignored if argument \code{df} is an input)
-  #' @param df a data frame with the following columns: x and y (the coordinates of the tiles in a 1 by 1 grid) and scale_p (the scale of the tile to be placed at each coordinate)
-  #' @return A list with two objects of type \code{sf} representing the container for the mosaic and the tiles arranged as a mosaic
+  #' @return An object of type \code{sf} with the tiles arranged as a mosaic
   #' @importFrom rlang .data
   #' @export
   #' @examples
-  #' tiles_1 <- st_truchet_p(type = "-", scale_p = 1)
-  #' tiles_2 <- st_truchet_p(type = "f", scale_p = 1/2)
-  #' mosaic <- st_truchet_ms(tiles_1, tiles_2)
+  #' mosaic <- st_truchet_ms()
+  #' mosaic <- st_truchet_ms(p1 = 0.8, p2 = 0.16, p3 = 0.04)
+  #' mosaic <- st_truchet_ms(p1 = 0.6, p2 = 0.3, p3 = 0.1, tiles = c("|", "-"))
   #' @note For a discussion of multi-scale Truchet patterns see \url{https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/}
 
   # Validate inputs
-  checkmate::assertNumber(prop,
+  # Assert proportions
+  checkmate::assertNumber(p1,
                           lower = 0,
                           upper = 1)
+  checkmate::assertNumber(p2,
+                          lower = 0,
+                          upper = 1)
+  checkmate::assertNumber(p3,
+                          lower = 0,
+                          upper = 1)
+  # Assert sum of proportions
+  checkmate::assertTRUE(p1 + p2 + p3 <= 1)
+  # Assert xlim
   checkmate::assertAtomicVector(xlim,
                                 min.len = 2,
                                 max.len = 2)
+  # Assert ylim
   checkmate::assertAtomicVector(ylim,
                                 min.len = 2,
                                 max.len = 2)
 
-  # Set the proportion of tiles at scale 1 to 1 if tiles at scale 1/2 not provided
-  if(is.null(t2)){
-    prop = 1
-  }
-
-  # Find the number of different tiles at each scale
-  n_1 <- unique(t1$tile)
-  if(length(n_1) == 1){
-    n_1 <- c(n_1, n_1)
-  }
-  if(!is.null(t2)){
-    n_2 <- unique(t2$tile)
-    if(length(n_2) == 1){
-      n_1 <- c(n_2, n_2)
-    }
-  }
-
   # Initialize data frame with coordinates for placing tiles if argument df was not provided
   if(is.null(df)){
-    # Flag to indicate that the data frame is generated internally
-    df_internal <- TRUE
 
     # Create grid for placing tiles using the limits provided xlim and ylim
     df <- data.frame(expand.grid(x = seq(xlim[1], xlim[2], 1),
                                  y = seq(ylim[1], ylim[2], 1)))
-  }else{
-    df_internal <- FALSE
+
+    # Adjust container to accommodate tiles at multiple scales:
+
+    df_1 <- df %>%
+      dplyr::slice_sample(prop = p1)
+
+    df_2 <- df %>%
+      dplyr::anti_join(df_1,
+                       by = c("x", "y"))
+
+    df_2 <- df_2 %>%
+      dplyr::slice_sample(prop = ifelse(p2 != 0 | p3 != 0,
+                                        p2/(p2 + p3),
+                                        0))
+
+    df_3 <- df %>%
+      dplyr::anti_join(df_1 %>%
+                         rbind(df_2),
+                       by = c("x", "y"))
+
+    df <- rbind(df_1,
+                df_2,
+                df_3) %>%
+      dplyr::mutate(tiles = sample(tiles,
+                                   dplyr::n(),
+                                   replace = TRUE),
+                    scale_p = c(rep(1,
+                                    nrow(df_1)),
+                                rep(1/2,
+                                    nrow(df_2)),
+                                rep(1/4,
+                                    nrow(df_3))))
   }
 
-  # Initialize mosaic
-  mosaic <- data.frame()
+  # Adjust points for multiscale mosaics
+  # Scale 1
+  df_1 <- df %>%
+    dplyr::filter(scale_p == 1)
 
-  if(df_internal){
-    for(i in 1:nrow(df)){
-      # Randomly select the scale of the mosaic
-      if(stats::rbinom(1, 1, p = prop) == 1){
-        mosaic <- rbind(mosaic,
-                        t1 %>%
-                          # Randomly sample from available tiles at this scale
-                          dplyr::filter(.data$tile == sample(n_1, 1)) %>%
-                          dplyr::mutate(group = i,
-                                        geometry = .data$geometry + c(df[i, 1], df[i, 2])) %>%
-                          sf::st_as_sf())
+  # Scale 2
+  df_2 <- df %>%
+    dplyr::filter(scale_p == 1/2) %>%
+    dplyr::mutate(x_1 = -0.25, y_1 = 0.25,
+                  x_2 = 0.25, y_2 = 0.25,
+                  x_3 = 0.25, y_3 = -0.25,
+                  x_4 = 0.25, y_4 = -0.25) %>%
+    tidyr::pivot_longer(cols = dplyr::starts_with("x_"),
+                        names_to = "xpos",
+                        values_to = "x_shift") %>%
+    tidyr::pivot_longer(cols = dplyr::starts_with("y_"),
+                        names_to = "ypos",
+                        values_to = "y_shift") %>%
+    dplyr::transmute(x = .data$x + .data$x_shift,
+                     y = .data$y + .data$y_shift,
+                     tiles,
+                     scale_p) %>%
+    dplyr::distinct()
 
-      }else{
-        mosaic <- rbind(mosaic,
-                        t2 %>%
-                          # Randomly sample from available tiles at this scale
-                          dplyr::filter(.data$tile == sample(n_2, 1)) %>%
-                          dplyr::mutate(group = i,
-                                        geometry = .data$geometry + c(df[i, 1] - 0.25, df[i, 2] - 0.25)) %>%
-                          sf::st_as_sf(),
-                        t2 %>%
-                          # Randomly sample from available tiles at this scale
-                          dplyr::filter(.data$tile == sample(2, 1)) %>%
-                          dplyr::mutate(group = i,
-                                        geometry = .data$geometry + c(df[i, 1] - 0.25, df[i, 2] + 0.25)) %>%
-                          sf::st_as_sf(),
-                        t2 %>%
-                          # Randomly sample from available tiles at this scale
-                          dplyr::filter(.data$tile == sample(2, 1)) %>%
-                          dplyr::mutate(group = i,
-                                        geometry = .data$geometry + c(df[i, 1] + 0.25, df[i, 2] - 0.25)) %>%
-                          sf::st_as_sf(),
-                        t2 %>%
-                          # Randomly sample from available tiles at this scale
-                          dplyr::filter(.data$tile == sample(2, 1)) %>%
-                          dplyr::mutate(group = i,
-                                        geometry = .data$geometry + c(df[i, 1] + 0.25, df[i, 2] + 0.25)) %>%
-                          sf::st_as_sf())
-      }}}else{
-        for(i in 1:nrow(df)){
-          # Assign tile by desired scale
-          if(df$scale_p[i] == 1){
-            mosaic <- rbind(mosaic,
-                            t1 %>%
-                              # Randomly sample from available tiles at this scale
-                              dplyr::filter(.data$tile == sample(n_1, 1)) %>%
-                              dplyr::mutate(group = i,
-                                            geometry = .data$geometry + c(df[i, 1], df[i, 2])) %>%
-                              sf::st_as_sf())
+  # Scale 3
+  df_3 <- df %>%
+    dplyr::filter(scale_p == 1/4) %>%
+    dplyr::mutate(x_1 = -1/8 * 3, y_1 = 1/8 * 3,
+                  x_2 = -1/8, y_2 = 1/8 * 3,
+                  x_3 = 1/8, y_3 = 1/8 * 3,
+                  x_4 = 1/8 * 3, y_4 = 1/8 * 3,
+                  x_5 = -1/8 * 3, y_5 = 1/8,
+                  x_6 = -1/8, y_6 = 1/8,
+                  x_7 = 1/8, y_7 = 1/8,
+                  x_8 = 1/8 * 3, y_8 = 1/8,
+                  x_9 = -1/8 * 3, y_9 = -1/8 ,
+                  x_10 = -1/8, y_10 = -1/8,
+                  x_11 = 1/8, y_11 = -1/8,
+                  x_12 = 1/8 * 3, y_12 = -1/8,
+                  x_13 = -1/8 * 3, y_13 = -1/8 * 3,
+                  x_14 = -1/8, y_14 = -1/8 * 3,
+                  x_15 = 1/8, y_15 = -1/8 * 3,
+                  x_16 = 1/8 * 3, y_16 = -1/8 * 3) %>%
+    tidyr::pivot_longer(cols = dplyr::starts_with("x_"),
+                        names_to = "xpos",
+                        values_to = "x_shift") %>%
+    tidyr::pivot_longer(cols = dplyr::starts_with("y_"),
+                        names_to = "ypos",
+                        values_to = "y_shift") %>%
+    dplyr::transmute(x = .data$x + .data$x_shift,
+                     y = .data$y + .data$y_shift,
+                     tiles,
+                     scale_p) %>%
+    dplyr::distinct()
 
-          }else{
-            mosaic <- rbind(mosaic,
-                            t2 %>%
-                              # Randomly sample from available tiles at this scale
-                              dplyr::filter(.data$tile == sample(n_2, 1)) %>%
-                              dplyr::mutate(group = i,
-                                            geometry = .data$geometry + c(df[i, 1] - 0.25, df[i, 2] - 0.25)) %>%
-                              sf::st_as_sf(),
-                            t2 %>%
-                              # Randomly sample from available tiles at this scale
-                              dplyr::filter(.data$tile == sample(2, 1)) %>%
-                              dplyr::mutate(group = i,
-                                            geometry = .data$geometry + c(df[i, 1] - 0.25, df[i, 2] + 0.25)) %>%
-                              sf::st_as_sf(),
-                            t2 %>%
-                              # Randomly sample from available tiles at this scale
-                              dplyr::filter(.data$tile == sample(2, 1)) %>%
-                              dplyr::mutate(group = i,
-                                            geometry = .data$geometry + c(df[i, 1] + 0.25, df[i, 2] - 0.25)) %>%
-                              sf::st_as_sf(),
-                            t2 %>%
-                              # Randomly sample from available tiles at this scale
-                              dplyr::filter(.data$tile == sample(2, 1)) %>%
-                              dplyr::mutate(group = i,
-                                            geometry = .data$geometry + c(df[i, 1] + 0.25, df[i, 2] + 0.25)) %>%
-                              sf::st_as_sf())
-          }
-        }
-      }
+  # Bind all scales
+  df <- rbind(df_1,
+              df_2,
+              df_3)
+
+  # Collect elements for assembling the mosaic
+  x_c <- df$x
+  y_c <- df$y
+  type <- df$tiles
+  scale_p <- df$scale_p
+
+  mosaic <- purrr::pmap_dfr(list(x_c, y_c, type, scale_p), st_truchet_p)
 
   # Summarize by color to give individual pieces made of compact segments of mosaic by color
-  mosaic_2 <- mosaic %>%
-    dplyr::group_by(.data$color) %>%
-    dplyr::summarize(color = max(.data$color))
-
-  sf::st_agr(mosaic_2) <- "constant"
-
-  # Obtain the difference of mosaics of color 1 with respect to 2
-  mosaic_3 <- mosaic_2[1,] %>%
-    sf::st_difference(mosaic_2[2,]$geometry) %>%
-    sf::st_set_agr("constant") %>%
-    sf::st_cast(to = "POLYGON") %>%
-    dplyr::mutate(area = sf::st_area(.data$geometry))
-
-  # Cast the multipolygon of the opposite color to individual polygons
-  mosaic_4 <- mosaic_2[2,] %>%
-    sf::st_set_agr("constant") %>%
-    sf::st_cast(to = "POLYGON") %>%
-    dplyr::mutate(area = sf::st_area(.data$geometry))
-
-  # Bind both colors
-  mosaic <- rbind(mosaic_3,
-                  mosaic_4)
+  # mosaic_2 <- mosaic %>%
+  #   dplyr::group_by(.data$color) %>%
+  #   dplyr::summarize(color = max(.data$color))
+  #
+  # sf::st_agr(mosaic_2) <- "constant"
+  #
+  # # Obtain the difference of mosaics of color 1 with respect to 2
+  # mosaic_3 <- mosaic_2[1,] %>%
+  #   sf::st_difference(mosaic_2[2,]$geometry) %>%
+  #   sf::st_set_agr("constant") %>%
+  #   sf::st_cast(to = "POLYGON") %>%
+  #   dplyr::mutate(area = sf::st_area(.data$geometry))
+  #
+  # # Cast the multipolygon of the opposite color to individual polygons
+  # mosaic_4 <- mosaic_2[2,] %>%
+  #   sf::st_set_agr("constant") %>%
+  #   sf::st_cast(to = "POLYGON") %>%
+  #   dplyr::mutate(area = sf::st_area(.data$geometry))
+  #
+  # # Bind both colors
+  # mosaic <- rbind(mosaic_3,
+  #                 mosaic_4)
 
   return(mosaic)
 }

@@ -5,29 +5,32 @@
 \title{Truchet mosaics}
 \usage{
 st_truchet_ms(
-  t1,
-  t2 = NULL,
-  prop = 0.5,
-  xlim = c(1, 8),
-  ylim = c(1, 12),
-  df = NULL
+  df = NULL,
+  p1 = 1,
+  p2 = 0,
+  p3 = 0,
+  tiles = c("dr", "dl"),
+  xlim = c(1, 3),
+  ylim = c(1, 6)
 )
 }
 \arguments{
-\item{t1}{a \code{sf} data frame with truchet tile(s) produced by \link{st_truchet_p} at scale 1; these tiles are squares with sides of length 1}
+\item{df}{an (optional) data frame with the following columns: x and y (the coordinates of the tiles in a 1 by 1 grid), tiles (characters with types of tiles to use for mosaic), scale_p (the scale of the tile to be placed at each coordinate)}
 
-\item{t2}{an (optional) \code{sf} data frame with truchet tile(s) produced by \link{st_truchet_p} at scale 1/2; these tiles are squares with sides of length 1/2}
+\item{p1}{a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1 (the sum of p1, p2, p3 must be equal to one, or less to avoid empty spots in the mosaic)}
 
-\item{prop}{a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1}
+\item{p2}{a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1/2}
+
+\item{p3}{a number between 0 and 1 with the proportion of spots in the mosaic to cover with tiles of scale 1/4}
+
+\item{tiles}{a character vector with types of tiles to use for mosaic (default: \code{c("dr", "dl")})}
 
 \item{xlim}{a numeric vector of length 2 giving the range of the x coordinates of the mosaic (ignored if argument \code{df} is an input)}
 
 \item{ylim}{a numeric vector of length 2 giving the range of the y coordinates of the mosaic (ignored if argument \code{df} is an input)}
-
-\item{df}{a data frame with the following columns: x and y (the coordinates of the tiles in a 1 by 1 grid) and scale_p (the scale of the tile to be placed at each coordinate)}
 }
 \value{
-A list with two objects of type \code{sf} representing the container for the mosaic and the tiles arranged as a mosaic
+An object of type \code{sf} with the tiles arranged as a mosaic
 }
 \description{
 Truchet mosaics
@@ -36,7 +39,7 @@ Truchet mosaics
 For a discussion of multi-scale Truchet patterns see \url{https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/}
 }
 \examples{
-tiles_1 <- st_truchet_p(type = "-", scale_p = 1)
-tiles_2 <- st_truchet_p(type = "f", scale_p = 1/2)
-mosaic <- st_truchet_ms(tiles_1, tiles_2)
+mosaic <- st_truchet_ms()
+mosaic <- st_truchet_ms(p1 = 0.8, p2 = 0.16, p3 = 0.04)
+mosaic <- st_truchet_ms(p1 = 0.6, p2 = 0.3, p3 = 0.1, tiles = c("|", "-"))
 }
