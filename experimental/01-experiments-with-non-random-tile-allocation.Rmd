@@ -1,0 +1,35 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Non-random allocation of tiles
+```{r load-packages, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(purrr)
+library(truchet)
+```
+
+Create data frame for the mosaic:
+```{r}
+xlim <- c(0, 10)
+ylim <- c(0, 10)
+
+# Create a data frame with the spots for tiles
+container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                         y = seq(ylim[1], ylim[2], 1)) %>%
+  mutate(tiles = case_when(x <= 2 | x >= 8 ~ "dl", 
+                           x > 2 & x <8 ~ "dr"),
+         scale_p = case_when(x <= 2 | x >= 8 ~ 1/2, 
+                           x > 2 & x < 8 ~ 1))
+```
+
+```{r}
+st_truchet_ms(df = container) %>%
+  ggplot() +
+  geom_sf(aes(fill = factor(color)),
+          color = NA)
+```
+
+
