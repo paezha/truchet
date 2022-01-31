@@ -3,10 +3,9 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+I wanted to try animating Truchet tiles after seeing some really cool examples (see: https://twitter.com/Eko3316/status/1487367084292157448).
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
+I will use this packages:
 ```{r}
 library(gganimate)
 library(sf)
@@ -15,34 +14,7 @@ library(truchet)
 ```
 
 
-Create four tiles in the same position and bind:
-```{r}
-df <- rbind(data.frame(st_truchet_p(x = 0, y = 0, type = "fnw"), state = "a"),
-            data.frame(st_truchet_p(x = 0, y = 0, type = "fne"), state = "b"),
-            data.frame(st_truchet_p(x = 0, y = 0, type = "fse"), state = "c"),
-            data.frame(st_truchet_p(x = 0, y = 0, type = "fsw"), state = "d")) %>%
-  st_sf()
-            
-```
-
-```{r}
-ggplot() +
-  geom_sf(data = df,
-          aes(fill = factor(color)),
-          color = NA) + 
-  facet_wrap(~ state)
-```
-
-```{r}
-ggplot() +
-  geom_sf(data = df,
-          aes(fill = factor(color),
-              group = state),
-          color = NA) + 
-  transition_states(state) + 
-  ease_aes("cubic-in-out")
-```
-
+Create a function to rotate a tile:
 ```{r}
 rotation = function(a, x, y, type){
   tile <- st_truchet_p(type = type)
@@ -53,26 +25,28 @@ rotation = function(a, x, y, type){
 } 
 ```
 
+Prepare the moving tile(s):
 ```{r}
 a <- c(seq(0, pi/2, pi/90), 
-        rep(pi/2, 45),
-       seq(0, pi, pi/90),
-       rep(pi, 45))
-
-type <- rep("fnw", length(a))
+       rep(pi/2, 60),
+       seq(pi/2, pi, pi/90),
+       rep(pi, 60),
+       seq(pi, 3 * pi/2, pi/90),
+       rep(3 * pi/2, 60),
+       seq(3 * pi/2, 2 * pi, pi/90),
+       rep(2 * pi, 60))
 
 df <- data.frame()
 count <- 0
 for(i in a){
   count <- count +1
   df <- rbind(df,
-              data.frame(rotation(a = i, x = 3, y = 3, type = "fnw"), state = count))
+              data.frame(rotation(a = i, x = 3, y = 3, type = "dr"), state = count))
 }
 
 df <- df %>%
   st_sf()
 ```
-
 
 Rest of mosaic:
 ```{r}
@@ -82,43 +56,113 @@ ylim <- c(0, 6)
 # Create a data frame with the spots for tiles
 container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
                          y = seq(ylim[1], ylim[2], 1)) %>%
-  filter(x != 0, y != 0) %>%
+  filter(x != 0 | y != 0) %>%
   mutate(tiles = sample(c("fnw", "fne", "fse", "fsw"), n(), replace = TRUE),
          scale_p = 1)
 ```
 
+Assemble mosaic:
 ```{r}
 mosaic <- st_truchet_ms(df = container)
 ```
 
-
+Create plot and render:
 ```{r}
 p <- ggplot() +
   geom_sf(data = mosaic,
           aes(fill = factor(color)),
           color = NA) +
-   geom_sf(data = df %>% st_sf(),
-           aes(fill = factor(color),
-               group = state),
-           color = NA) + 
+  geom_sf(data = df %>% st_sf(),
+          aes(fill = factor(color),
+              group = state),
+          color = NA) + 
   scale_fill_manual(values = c("black", "white")) +
   theme_void() +
   theme(legend.position = "none") +
-   transition_time(state) +
-  shadow_trail(max_frames = 1)
+  transition_time(state)
 
-animate(p, rewind = TRUE)
+animate(p, rewind = TRUE,
+        fps = 60,
+        duration = 10,
+        res = 300,
+        height = 2, 
+        width = 2,
+        units = "in")
 ```
 
+Save plot:
 ```{r}
-anim_save()
+anim_save("animated-mosaic.gif")
 ```
 
+## Another version
 
+Moving tile(s):
 ```{r}
-ggplot() +
-  geom_sf(data = df %>% st_sf(),
+a <- c(seq(0, pi/2, pi/90), 
+       rep(pi/2, 60),
+       seq(pi/2, pi, pi/90),
+       rep(pi, 60),
+       seq(pi, 3 * pi/2, pi/90),
+       rep(3 * pi/2, 60),
+       seq(3 * pi/2, 2 * pi, pi/90),
+       rep(2 * pi, 60))
+
+df <- data.frame()
+count <- 0
+for(i in a){
+  count <- count +1
+  df <- rbind(df,
+              data.frame(rotation(a = i, x = 3, y = 3, type = "dl"), state = count))
+}
+
+df <- df %>%
+  st_sf()
+```
+
+Rest of tiles:
+```{r}
+xlim <- c(0, 6)
+ylim <- c(0, 6)
+
+# Create a data frame with the spots for tiles
+container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                         y = seq(ylim[1], ylim[2], 1)) %>%
+  dplyr::filter(x != 3 | y != 3) %>%
+  mutate(tiles = sample(c("fnw", "-", "fse", "|"), n(), replace = TRUE),
+         scale_p = sample(c(1, 1/2), n(), replace = TRUE))
+```
+
+Assemble mosaic:
+```{r}
+mosaic <- st_truchet_ms(df = container)
+```
+
+Plot and render:
+```{r}
+p <- ggplot() +
+  geom_sf(data = mosaic,
           aes(fill = factor(color)),
           color = NA) +
-  facet_wrap(~state)
+  geom_sf(data = df %>% st_sf(),
+          aes(fill = factor(color),
+              group = state),
+          color = NA) + 
+  scale_fill_manual(values = c("black", "white")) +
+  theme_void() +
+  theme(legend.position = "none") +
+  transition_time(state)
+
+animate(p, rewind = TRUE,
+        fps = 60,
+        duration = 10,
+        res = 300,
+        height = 2, 
+        width = 2, units = "in")
 ```
+
+Save animation:
+```{r}
+anim_save("animated-mosaic-2.gif")
+```
+
