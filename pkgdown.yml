@@ -1,8 +1,9 @@
 pandoc: 2.7.3
 pkgdown: 2.0.2
 pkgdown_sha: ~
-articles: {}
-last_built: 2022-02-13T05:42Z
+articles:
+  tiles-mosaics-as-sf: tiles-mosaics-as-sf.html
+last_built: 2022-02-13T19:27Z
 urls:
   reference: https://paezha.github.io/truchet/reference
   article: https://paezha.github.io/truchet/articles

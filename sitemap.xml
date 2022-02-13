@@ -10,6 +10,12 @@
     <loc>https://paezha.github.io/truchet/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://paezha.github.io/truchet/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://paezha.github.io/truchet/articles/tiles-mosaics-as-sf.html</loc>
+  </url>
+  <url>
     <loc>https://paezha.github.io/truchet/authors.html</loc>
   </url>
   <url>
@@ -20,6 +26,9 @@
   </url>
   <url>
     <loc>https://paezha.github.io/truchet/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://paezha.github.io/truchet/reference/st_truchet_dissolve.html</loc>
   </url>
   <url>
     <loc>https://paezha.github.io/truchet/reference/st_truchet_ms.html</loc>
