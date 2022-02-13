@@ -20,3 +20,5 @@ Imports:
     rlang,
     sf,
     tidyr
+Suggests: 
+    rmarkdown
