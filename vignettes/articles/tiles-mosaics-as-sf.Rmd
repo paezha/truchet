@@ -24,7 +24,7 @@ library(truchet)
 Create a mosaic:
 ```{r}
 set.seed(7352)
-mosaic <- st_truchet_ms(tiles = c("dr", "tn"), p1 = 1)
+mosaic <- st_truchet_ms(tiles = c("dr", "tn"), p1 = 0.2, p2 = 0.8)
 ```
 
 The boundaries are evident when we color them:
