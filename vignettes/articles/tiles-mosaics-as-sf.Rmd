@@ -23,7 +23,7 @@ library(truchet)
 
 Create a mosaic:
 ```{r}
-mosaic <- st_truchet_ms()
+mosaic <- st_truchet_ms(tiles = c("dr", "tn"))
 ```
 
 The boundaries are evident when we color them:
