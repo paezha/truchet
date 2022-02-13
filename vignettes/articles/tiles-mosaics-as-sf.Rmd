@@ -15,8 +15,9 @@ It is important to note that mosaics produced by `st_truchet_ms` are collections
 
 Load packages:
 ```{r setup, message=FALSE}
+library(dplyr)
+library(ggplot2)
 library(sf)
-library(tidyverse)
 library(truchet)
 ```
 
