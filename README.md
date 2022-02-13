@@ -24,7 +24,7 @@ Also check http://cambolbro.com/cv/index.html
 ## Installation
 
 You can install the development version of truchet from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/paezha/truchet) with:
 
 ``` r
 # install.packages("devtools")
