@@ -11,7 +11,7 @@ st_truchet_p(x = 0, y = 0, type = "dl", scale_p = 1)
 
 \item{y}{A number with the y coordinate of the center of the tile}
 
-\item{type}{A single character to designate a type of tile; currently supported options are "d", "-", "f", "a"}
+\item{type}{A single character to designate a type of tile; currently supported options are "dl", "dr", "-", "|", "+.", "+", "x.", "tn", "fnw", "fne", "fsw", "fse", "ane", "asw"}
 
 \item{scale_p}{A number to designate the scale of the tile; currently supported options are 1, 1/2, and 1/4}
 }

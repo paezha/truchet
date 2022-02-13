@@ -95,6 +95,35 @@ Save plot:
 anim_save("animated-mosaic.gif")
 ```
 
+Create plot and render:
+```{r}
+p <- ggplot() +
+  geom_sf(data = mosaic,
+          aes(fill = factor(color)),
+          color = NA) +
+  geom_sf(data = df %>% st_sf(),
+          aes(fill = factor(color),
+              group = state),
+          color = NA) + 
+  scale_fill_manual(values = c("white", "black")) +
+  theme_void() +
+  theme(legend.position = "none") +
+  transition_time(state)
+
+animate(p, rewind = TRUE,
+        fps = 60,
+        duration = 10,
+        res = 300,
+        height = 2, 
+        width = 2,
+        units = "in")
+```
+
+Save plot:
+```{r}
+anim_save("animated-mosaic-b.gif")
+```
+
 ## Another version
 
 Moving tile(s):
@@ -164,5 +193,33 @@ animate(p, rewind = TRUE,
 Save animation:
 ```{r}
 anim_save("animated-mosaic-2.gif")
+```
+
+Plot and render:
+```{r}
+p <- ggplot() +
+  geom_sf(data = mosaic,
+          aes(fill = factor(color)),
+          color = NA) +
+  geom_sf(data = df %>% st_sf(),
+          aes(fill = factor(color),
+              group = state),
+          color = NA) + 
+  scale_fill_manual(values = c("white", "black")) +
+  theme_void() +
+  theme(legend.position = "none") +
+  transition_time(state)
+
+animate(p, rewind = TRUE,
+        fps = 60,
+        duration = 10,
+        res = 300,
+        height = 2, 
+        width = 2, units = "in")
+```
+
+Save animation:
+```{r}
+anim_save("animated-mosaic-2-b.gif")
 ```
 

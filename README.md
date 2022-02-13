@@ -52,7 +52,8 @@ library(truchet)
 
 ## Tiles
 
-Currently, these are the tiles that are implemented.
+These are sample tiles. The complete list of tiles implemented in the
+package appears at the bottom.
 
 ### Tile of type “d” or “\\” and “/” in Carlson’s notation.
 
@@ -108,7 +109,7 @@ includes identifiers for tiles and colors.
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-## Assembling mosaics
+## Tile scales
 
 Carlson’s tiles are designed to work at multiple scales. At the moment,
 the function to create tiles supports scale 1 (the tiles are squares
@@ -179,27 +180,22 @@ st_truchet_ms(tiles = c("-", "|", "dl")) %>%
 These are all the tiles currently implemented:
 
 ``` r
-# Extent of mosaic
-xlim <- c(0, 9)
-ylim <- c(0, 2)
-
-# Create a data frame with the spots for tiles
-container <- expand.grid(x = seq(xlim[1], xlim[2], 2),
-                         y = c(0, 2)) %>%
-  mutate(type = factor(c("dl", "dr", "-", "|", "fnw", "fne", "fsw", "fse", "ane", "asw"),
-                       levels = c("dl", "dr", "-", "|", "fnw", "fne", "fsw", "fse", "ane", "asw"),
-                       ordered = TRUE))
+# Mosaic types
+mosaic_types <- data.frame(type = c("dl", "dr", "-", "|", "fnw", "fne", "fsw", "fse", "+", "+.", "x.", "tn", "ane", "asw")) %>%
+  mutate(tile = 1:n(),
+         x = 2 * tile %% 5,
+         y = 2 * tile %/% 5)
 
 # Elements for assemblig the mosaic
-x_c <- container$x
-y_c <- container$y
-type <- as.character(container$type)
-scale_p <- rep(1, nrow(container))
+x_c <- mosaic_types$x
+y_c <- mosaic_types$y
+type <- as.character(mosaic_types$type)
+scale_p <- rep(1, nrow(mosaic_types))
 
 pmap_dfr(list(x_c, y_c, type, scale_p), st_truchet_p) %>%
   ggplot() + 
   geom_sf(aes(fill = factor(color))) +
-  geom_text(data = container,
+  geom_text(data = mosaic_types,
             aes(x = x,
                 y = y,
                 label = type),

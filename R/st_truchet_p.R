@@ -4,7 +4,7 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
   #'
   #' @param x A number with the x coordinate of the center of the tile
   #' @param y A number with the y coordinate of the center of the tile
-  #' @param type A single character to designate a type of tile; currently supported options are "d", "-", "f", "a"
+  #' @param type A single character to designate a type of tile; currently supported options are "dl", "dr", "-", "|", "+.", "+", "x.", "tn", "fnw", "fne", "fsw", "fse", "ane", "asw"
   #' @param scale_p A number to designate the scale of the tile; currently supported options are 1, 1/2, and 1/4
   #' @return A list with one or more objects of type \code{sf} representing one or more tiles depending on type
   #' @importFrom rlang .data
@@ -16,7 +16,7 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
   # Validate inputs
   checkmate::assertChoice(scale_p, c(1, 1/2, 1/4))
-  checkmate::assertChoice(type, c("dl", "dr", "-", "|", "fnw", "fne", "fsw", "fse", "ane", "asw"))
+  checkmate::assertChoice(type, c("dl", "dr", "-", "|", "+.", "+", "x.", "tn", "fnw", "fne", "fsw", "fse", "ane", "asw"))
 
   ## CREATE BASE TILE
   #  Define square polygon
@@ -34,8 +34,7 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
     sf::st_as_sf()
 
   # Points
-  pts <- data.frame(id = c("points_1", "points_2", "points_1", "points_2"),
-                    x = c(0, 0, 1, 1),
+  pts <- data.frame(x = c(0, 0, 1, 1),
                     y = c(0, 1, 1, 0))
 
   # Convert coordinates to points and then to simple features
@@ -59,12 +58,11 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
   # Assemble base tile
   tile <- data.frame(color = 1,
                      sf::st_geometry(rbind(tile,
-                                           bfs_1 %>%
-                                             dplyr::select(-.data$id)) %>%
+                                           bfs_1) %>%
                                        sf::st_union())) %>%
     sf::st_as_sf()
 
-    ## BASE TILE DONE
+  ## BASE TILE DONE
 
   # Tile types
 
@@ -114,10 +112,10 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
            # Bind BASE TILE with second set of buffers
            # dl
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -161,10 +159,10 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -220,15 +218,15 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_1 %>%
-                                                 sf::st_union()) %>%
-                             sf::st_set_agr("constant") %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_1 %>%
-                             dplyr::transmute(color = 2),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -283,15 +281,15 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_1 %>%
-                                                 sf::st_union()) %>%
-                             sf::st_set_agr("constant") %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_1 %>%
-                             dplyr::transmute(color = 2),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -359,15 +357,15 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_1 %>%
-                                                 sf::st_union()) %>%
-                             sf::st_set_agr("constant") %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_1 %>%
-                             dplyr::transmute(color = 2),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -435,15 +433,15 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_1 %>%
-                                                 sf::st_union()) %>%
-                             sf::st_set_agr("constant") %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_1 %>%
-                             dplyr::transmute(color = 2),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -525,11 +523,11 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
            # Rotate and translate to create alternate tiles
            tile <- tile %>%
              dplyr::mutate(geometry = sf::st_geometry(tile) * matrix(c(cos(pi/2),
-                                                                         sin(pi/2),
-                                                                         -sin(pi/2),
-                                                                         cos(pi/2)),
-                                                                       nrow = 2,
-                                                                       ncol = 2) + c(0, 1))
+                                                                       sin(pi/2),
+                                                                       -sin(pi/2),
+                                                                       cos(pi/2)),
+                                                                     nrow = 2,
+                                                                     ncol = 2) + c(0, 1))
 
            ## ADORNMENTS DONE
          },
@@ -612,11 +610,252 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
            # fnw
            tile <- tile %>%
              dplyr::mutate(geometry = sf::st_geometry(tile) * matrix(c(cos(pi/2),
-                                                                         sin(pi/2),
-                                                                         -sin(pi/2),
-                                                                         cos(pi/2)),
-                                                                       nrow = 2,
-                                                                       ncol = 2) + c(0, 1))
+                                                                       sin(pi/2),
+                                                                       -sin(pi/2),
+                                                                       cos(pi/2)),
+                                                                     nrow = 2,
+                                                                     ncol = 2) + c(0, 1))
+
+           ## ADORNMENTS DONE
+         },
+
+         "+" = {
+           ## ADORNMENTS
+           # Make lines
+           line_1 <- matrix(c(1/2, 1/2,
+                              0, 1),
+                            nrow = 2,
+                            byrow = FALSE)
+
+           line_2 <- matrix(c(0, 1,
+                              1/2, 1/2),
+                            nrow = 2,
+                            byrow = FALSE)
+
+           # Convert coordinates to lines and then to simple features
+           line_1 <- data.frame(id = "line_1",
+                                r = 1/6,
+                                geometry = sf::st_linestring(line_1) %>%
+                                  sf::st_sfc()) %>%
+             sf::st_as_sf() %>%
+             sf::st_set_agr("constant")
+
+           # Convert coordinates to lines and then to simple features
+           line_2 <- data.frame(id = "line_2",
+                                r = 1/6,
+                                geometry = sf::st_linestring(line_2) %>%
+                                  sf::st_sfc()) %>%
+             sf::st_as_sf() %>%
+             sf::st_set_agr("constant")
+
+           # Buffer the lines and join to dots
+           bfs_1 <- line_1 %>%
+             sf::st_union(line_2 %>%
+                            sf::st_geometry()) %>%
+             sf::st_buffer(dist = 1/6)
+
+
+           # Set geometry to constant
+           sf::st_agr(tile) <- "constant"
+           sf::st_agr(bfs_1) <- "constant"
+
+           # Bind BASE TILE with second set of buffers
+           tile <- rbind(tile %>%
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant"),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2))
+           ## ADORNMENTS DONE
+         },
+
+         "+." = {
+           ## ADORNMENTS
+           # Points
+           pts <- data.frame(x = c(1/2, 1/2, 0, 1),
+                             y = c(1, 0, 1/2, 1/2))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create first set of buffers and cast to polygons
+           bfs_1 <- pts %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             dplyr::select(-.data$r)
+
+           # Set geometry to constant
+           sf::st_agr(tile) <- "constant"
+           sf::st_agr(bfs_1) <- "constant"
+
+           # Bind BASE TILE with second set of buffers
+           tile <- rbind(tile %>%
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant"),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2))
+           ## ADORNMENTS DONE
+         },
+
+         "x." = {
+           ## ADORNMENTS
+           # Points
+           pts <- data.frame(x = c(1/2, 1/2, 0, 1),
+                             y = c(1, 0, 1/2, 1/2))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create first set of buffers and cast to polygons
+           bfs_1 <- pts %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             dplyr::select(-.data$r)
+
+           # Assemble tile
+           tile <- data.frame(color = 2,
+                              sf::st_geometry(rbind(tile %>%
+                                                      dplyr::select(-.data$color),
+                                                    bfs_1) %>%
+                                                sf::st_union())) %>%
+             sf::st_as_sf()
+
+           # Second set of points
+           pts_2 <- data.frame(x = c(0, 0, 1, 1),
+                             y = c(0, 1, 1, 0))
+
+           # Convert coordinates to points and then to simple features
+           pts_2 <- pts_2 %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts_2) <- "constant"
+
+           # Circle segments
+           cs <- c(1/3)
+
+           # Create second set of buffers and cast to polygons
+           bfs_2 <- pts_2 %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts_2 %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             dplyr::select(-.data$r)
+
+           # Assign constant geometry
+           sf::st_agr(bfs_2) <- "constant"
+
+           # Bind TILE with second set of buffers
+           tile <- rbind(tile %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 1))
+           ## ADORNMENTS DONE
+         },
+
+         "tn" = {
+           ## ADORNMENTS
+
+           #  Define square polygon
+           pol_1 <- matrix(c(0, 1/3,
+                            0, 1,
+                            1, 1,
+                            1, 1/3,
+                            0, 1/3),
+                          ncol = 2,
+                          byrow = TRUE)
+
+           # Convert coordinates to polygons and then to simple features
+           pol_1 <- data.frame(geometry = sf::st_polygon(list(pol_1)) %>%
+                                sf::st_sfc()) %>%
+             sf::st_as_sf()
+
+           # Points
+           pts <- data.frame(x = c(1/2, 1/2, 0, 1),
+                             y = c(1, 0, 1/2, 1/2))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create first set of buffers and cast to polygons
+           bfs_1 <- pts %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             dplyr::select(-.data$r)
+
+           # Assemble tile
+           bfs_1 <- data.frame(sf::st_geometry(rbind(pol_1,
+                                                    bfs_1) %>%
+                                                sf::st_union())) %>%
+             sf::st_as_sf() %>%
+             sf::st_set_agr("constant")
+
+           # Second set of points
+           pts_2 <- data.frame(x = c(0, 1),
+                               y = c(1, 1))
+
+           # Convert coordinates to points and then to simple features
+           pts_2 <- pts_2 %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts_2) <- "constant"
+
+           # Circle segments
+           cs <- c(1/3)
+
+           # Create second set of buffers and cast to polygons
+           bfs_2 <- pts_2 %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts_2 %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             dplyr::select(-.data$r)
+
+           # Assign constant geometry
+           sf::st_agr(bfs_2) <- "constant"
+
+           # Difference between first set of buffers and second set of buffers
+           bfs_1 <- bfs_1 %>%
+             sf::st_difference(bfs_2 %>%
+                                 sf::st_union())
+
+           # Bind TILE with first set of buffers
+           tile <- rbind(tile %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_1),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2))
 
            ## ADORNMENTS DONE
          },
@@ -663,15 +902,15 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_1 %>%
-                                                 sf::st_union()) %>%
-                             sf::st_set_agr("constant") %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_1 %>%
-                             dplyr::transmute(color = 2),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          },
 
@@ -714,15 +953,15 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
 
            # Bind BASE TILE with second set of buffers
            tile <- rbind(tile %>%
-                             sf::st_difference(bfs_1 %>%
-                                                 sf::st_union()) %>%
-                             sf::st_set_agr("constant") %>%
-                             sf::st_difference(bfs_2 %>%
-                                                 sf::st_union()),
-                           bfs_1 %>%
-                             dplyr::transmute(color = 2),
-                           bfs_2 %>%
-                             dplyr::transmute(color = 2))
+                           sf::st_difference(bfs_1 %>%
+                                               sf::st_union()) %>%
+                           sf::st_set_agr("constant") %>%
+                           sf::st_difference(bfs_2 %>%
+                                               sf::st_union()),
+                         bfs_1 %>%
+                           dplyr::transmute(color = 2),
+                         bfs_2 %>%
+                           dplyr::transmute(color = 2))
            ## ADORNMENTS DONE
          }
   )
