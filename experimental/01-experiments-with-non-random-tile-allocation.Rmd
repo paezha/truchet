@@ -7,7 +7,8 @@ Non-random allocation of tiles
 ```{r load-packages, warning=FALSE}
 library(ggplot2)
 library(dplyr)
-library(purrr)
+library(MexBrewer)
+library(sf)
 library(truchet)
 ```
 
@@ -32,4 +33,74 @@ st_truchet_ms(df = container) %>%
           color = NA)
 ```
 
+Create data frame for the mosaic:
+```{r}
+xlim <- c(0, 10)
+ylim <- c(0, 10)
+
+# Create a data frame with the spots for tiles
+container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                         y = seq(ylim[1], ylim[2], 1)) %>%
+  mutate(tiles = sample(c("+", "+.", "x."), n(), replace = TRUE),
+         scale_p = case_when((x < 1 | x > 9) | (y < 1 | y > 9)  ~ 1/2,
+                           (x > 1 & x < 9) & (y > 1 & y < 9) ~ 1,
+                           TRUE ~ 1/2))
+```
+
+Create mosaic using the designed container:
+```{r}
+mosaic <- st_truchet_ms(df = container)
+```
+
+Plot mosaic:
+```{r}
+ggplot() +
+  geom_sf(data = mosaic,
+          aes(fill = color),
+          color = NA)
+```
+
+Dissolve edges:
+```{r}
+mosaic_dissolved <- st_truchet_dissolve(mosaic)
+```
+
+Plot mosaic:
+```{r}
+ggplot() +
+  geom_sf(data = mosaic_dissolved,
+          aes(fill = color),
+          color = "white",
+          size = 0.01)
+```
+
+Buffers:
+```{r}
+mosaic_buffered_1 <- mosaic_dissolved %>%
+  filter(color == 2) %>%
+  st_buffer(dist = c(-0.1)) %>%
+  mutate(color = 3)
+
+mosaic_buffered_2 <- mosaic_dissolved %>%
+  filter(color == 2) %>%
+  st_buffer(dist = c(-0.05)) %>%
+  mutate(color = 4)
+```
+
+```{r}
+ggplot() + 
+  geom_sf(data = mosaic_dissolved,
+          aes(fill = color),
+          color = "white",
+          size = 0.01) +
+  geom_sf(data = mosaic_buffered_2,
+          aes(fill = color),
+          color = "white",
+          size = 0.01) +
+  geom_sf(data = mosaic_buffered_1,
+          aes(fill = color),
+          color = "white",
+          size = 0.01) +
+  scale_fill_distiller(palette = "Purples", direction = -1)
+```
 
