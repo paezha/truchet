@@ -148,29 +148,5 @@ st_truchet_ms <- function(df = NULL, p1 = 1, p2 = 0, p3 = 0, tiles = c("dr", "dl
 
   mosaic <- purrr::pmap_dfr(list(x_c, y_c, type, scale_p), st_truchet_p)
 
-  # Summarize by color to give individual pieces made of compact segments of mosaic by color
-  # mosaic_2 <- mosaic %>%
-  #   dplyr::group_by(.data$color) %>%
-  #   dplyr::summarize(color = max(.data$color))
-  #
-  # sf::st_agr(mosaic_2) <- "constant"
-  #
-  # # Obtain the difference of mosaics of color 1 with respect to 2
-  # mosaic_3 <- mosaic_2[1,] %>%
-  #   sf::st_difference(mosaic_2[2,]$geometry) %>%
-  #   sf::st_set_agr("constant") %>%
-  #   sf::st_cast(to = "POLYGON") %>%
-  #   dplyr::mutate(area = sf::st_area(.data$geometry))
-  #
-  # # Cast the multipolygon of the opposite color to individual polygons
-  # mosaic_4 <- mosaic_2[2,] %>%
-  #   sf::st_set_agr("constant") %>%
-  #   sf::st_cast(to = "POLYGON") %>%
-  #   dplyr::mutate(area = sf::st_area(.data$geometry))
-  #
-  # # Bind both colors
-  # mosaic <- rbind(mosaic_3,
-  #                 mosaic_4)
-
   return(mosaic)
 }

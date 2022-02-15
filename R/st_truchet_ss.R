@@ -1,0 +1,48 @@
+st_truchet_ss <- function(df = NULL, tiles = c("dr", "dl"), xlim = c(1, 3), ylim = c(1, 6)){
+
+  #' Truchet mosaics
+  #'
+  #' @param df an (optional) data frame with the following columns: x and y (the coordinates of the tiles in a 1 by 1 grid), tiles (characters with types of tiles to use for mosaic), scale_p (the scale of the tile to be placed at each coordinate)
+  #' @param tiles a character vector with types of tiles to use for mosaic (default: \code{c("dr", "dl")})
+  #' @param xlim a numeric vector of length 2 giving the range of the x coordinates of the mosaic (ignored if argument \code{df} is an input)
+  #' @param ylim a numeric vector of length 2 giving the range of the y coordinates of the mosaic (ignored if argument \code{df} is an input)
+  #' @return An object of type \code{sf} with the tiles arranged as a mosaic
+  #' @importFrom rlang .data
+  #' @export
+  #' @examples
+  #' mosaic <- st_truchet_ss()
+  #' mosaic <- st_truchet_ss(tiles = c("dl", "dr"))
+  #' @note For a discussion of multi-scale Truchet patterns see \url{https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/}
+
+  # Validate inputs
+  # Assert xlim
+  checkmate::assertAtomicVector(xlim,
+                                min.len = 2,
+                                max.len = 2)
+  # Assert ylim
+  checkmate::assertAtomicVector(ylim,
+                                min.len = 2,
+                                max.len = 2)
+
+  # Initialize data frame with coordinates for placing tiles if argument df was not provided
+  if(is.null(df)){
+
+    # Create grid for placing tiles using the limits provided xlim and ylim
+    df <- data.frame(expand.grid(x = seq(xlim[1], xlim[2], 1),
+                                 y = seq(ylim[1], ylim[2], 1))) %>%
+      dplyr::mutate(tiles = sample(tiles,
+                                   dplyr::n(),
+                                   replace = TRUE))
+  }
+
+  # Collect elements for assembling the mosaic
+  x_c <- df$x
+  y_c <- df$y
+  type <- df$tiles
+
+  mosaic <- purrr::pmap_dfr(list(x_c, y_c, type), st_truchet_l)
+
+
+
+  return(cbind(mosaic, df))
+}

@@ -41,7 +41,7 @@ ylim <- c(0, 10)
 # Create a data frame with the spots for tiles
 container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
                          y = seq(ylim[1], ylim[2], 1)) %>%
-  mutate(tiles = sample(c("+", "+.", "x."), n(), replace = TRUE),
+  mutate(tiles = sample(c("fnw", "fne", "fsw", "fse"), n(), replace = TRUE),
          scale_p = case_when((x < 1 | x > 9) | (y < 1 | y > 9)  ~ 1/2,
                            (x > 1 & x < 9) & (y > 1 & y < 9) ~ 1,
                            TRUE ~ 1/2))
@@ -76,31 +76,57 @@ ggplot() +
 
 Buffers:
 ```{r}
+mosaic_buffered_0 <- mosaic_dissolved %>%
+  filter(color == 1) %>%
+  st_buffer(dist = c(-0.05)) %>%
+  mutate(color = 0)
+
 mosaic_buffered_1 <- mosaic_dissolved %>%
   filter(color == 2) %>%
-  st_buffer(dist = c(-0.1)) %>%
+  st_buffer(dist = c(-0.15)) %>%
   mutate(color = 3)
 
 mosaic_buffered_2 <- mosaic_dissolved %>%
   filter(color == 2) %>%
-  st_buffer(dist = c(-0.05)) %>%
+  st_buffer(dist = c(-0.10)) %>%
   mutate(color = 4)
+
+mosaic_buffered_3 <- mosaic_dissolved %>%
+  filter(color == 2) %>%
+  st_buffer(dist = c(-0.05)) %>%
+  mutate(color = 5)
 ```
 
 ```{r}
 ggplot() + 
   geom_sf(data = mosaic_dissolved,
           aes(fill = color),
-          color = "white",
+          color = "black",
+          size = 0.01) +
+  geom_sf(data = mosaic_buffered_0,
+          aes(fill = color),
+          color = "black",
+          size = 0.01) +
+  geom_sf(data = mosaic_buffered_3,
+          aes(fill = color),
+          color = "black",
           size = 0.01) +
   geom_sf(data = mosaic_buffered_2,
           aes(fill = color),
-          color = "white",
+          color = "black",
           size = 0.01) +
   geom_sf(data = mosaic_buffered_1,
           aes(fill = color),
-          color = "white",
+          color = "black",
           size = 0.01) +
-  scale_fill_distiller(palette = "Purples", direction = -1)
+  scale_fill_distiller(palette = "RdYlBu", direction = -1) +
+  theme_void() + 
+  theme(legend.position = "none")
+
+ggsave("buffered-tiles.png",
+       height = 8,
+       width = 8,
+       units = "in",
+       dpi = 320)
 ```
 

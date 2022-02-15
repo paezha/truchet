@@ -1,0 +1,204 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Non-random allocation of tiles
+```{r load-packages, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(lwgeom)
+library(MexBrewer)
+library(sf)
+library(truchet)
+```
+
+ggplot()  + geom_sf(data = mosaic %>% st_buffer(dist = c(0.15)) %>% st_union(), color = "dodgerblue4", fill = "dodgerblue1", size = 1) + geom_sf(data = mosaic %>% st_buffer(dist = c(0.05)), size = 0.5)
+
+Create data frame for the mosaic:
+```{r}
+xlim <- c(0, 10)
+ylim <- c(0, 10)
+
+# Create a data frame with the spots for tiles
+container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                         y = seq(ylim[1], ylim[2], 1)) %>%
+  mutate(tiles = case_when(x <= 2 | x >= 8 ~ "dl", 
+                           x > 2 & x <8 ~ "dr"))
+```
+
+```{r}
+st_truchet_ss(df = container) %>%
+  ggplot() +
+  geom_sf()
+```
+
+Create data frame for the mosaic:
+```{r}
+xlim <- c(0, 10)
+ylim <- c(0, 10)
+
+# Create a data frame with the spots for tiles
+container <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                         y = seq(ylim[1], ylim[2], 1)) %>%
+  mutate(tiles = sample(c("dl", "dr"), n(), replace = TRUE))
+```
+
+Create mosaic using the designed container:
+```{r}
+mosaic <- st_truchet_ss(df = container)
+```
+
+Plot mosaic:
+```{r}
+ggplot() +
+  geom_sf(data = mosaic,
+          size = 2)
+```
+
+Plot with some embellishments:
+```{r}
+ggplot() +
+  geom_sf(data = mosaic %>% 
+            st_buffer(dist = c(0.20)) %>%
+            st_union(), 
+          color = "white", 
+          fill = "dodgerblue1", 
+          size = 0.5) + 
+  geom_sf(data = mosaic %>% 
+            st_buffer(dist = c(0.15),
+                      singleSide = TRUE),
+          aes(fill = x + y),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  #scale_fill_distiller(palette = "RdYlBu")  +
+  theme_void() +
+  theme(legend.position = "none",
+        panel.background = element_rect(color = NA,
+                                        fill = "dodgerblue4"))
+```
+
+Plot with some embellishments:
+```{r}
+ggplot() +
+  geom_sf(data = mosaic %>% 
+            st_buffer(dist = c(0.20)) %>%
+            st_union(), 
+          color = "white", 
+          fill = "dodgerblue1", 
+          size = 0.5) + 
+  geom_sf(data = mosaic,
+          aes(color = sqrt(x^2 + y^2),
+              size = sqrt(x^2 + y^2))) +
+  scale_color_gradientn(colors = mex.brewer("Alacena")) +
+  scale_size(range = c(0.5, 1.5)) +
+  theme_void() +
+  theme(legend.position = "none",
+        panel.background = element_rect(color = NA,
+                                        fill = "dodgerblue4"))
+```
+
+Create a polygon to contain the mosaic:
+```{r}
+ container <- matrix(c(0, 0,
+                   0, 10,
+                   10, 10,
+                   10, 0,
+                   0, 0),
+                 ncol = 2,
+                 byrow = TRUE)
+
+  # Convert coordinates to polygons and then to simple features
+  container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                       sf::st_sfc()) %>%
+    sf::st_as_sf()
+```
+
+Split container
+```{r}
+container <- container%>%
+  st_split(mosaic %>% st_union())
+```
+
+Extract geometries:
+```{r}
+container <- container %>% 
+  st_collection_extract(c("POLYGON"))
+```
+
+Plot container:
+```{r}
+ggplot() +
+  geom_sf(data = container %>% 
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "white",
+          size = 0.5) +
+  geom_sf(data = container %>% 
+            st_buffer(dist = c(-0.15)) %>%
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "white",
+          size = 0.5) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("single-scale-polygons-revolucion.png")
+```
+
+
+Something interesting happens with positive buffers:
+```{r}
+ggplot() +
+  # geom_sf(data = container %>% 
+  #           mutate(id = sample(1:n(), 
+  #                              n())),
+  #         aes(fill = id),
+  #         color = "white",
+  #         size = 0.5) +
+  geom_sf(data = container %>% 
+            # Experiment with different buffer sizes
+            st_buffer(dist = c(0.5)) %>%
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "white",
+          size = 1) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("single-scale-polygons-revolucion-positive-buffers-2.png")
+```
+
+Something interesting happens with positive buffers:
+```{r}
+ggplot() +
+  geom_sf(data = container %>% 
+            # Experiment with different buffer sizes
+            st_buffer(dist = c(0.5)) %>%
+            st_intersection(container) %>%
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "black",
+          size = 1) +
+  geom_sf(data = container %>% 
+            # Experiment with different buffer sizes
+            st_buffer(dist = c(0.3)) %>%
+            st_buffer(dist = -0.2) %>%
+            mutate(id = sample(1:n(), 
+                               n())),
+          fill = NA,
+          color = "black",
+          size = 1) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("single-scale-polygons-revolucion-positive-buffers-3.png")
+```
+
