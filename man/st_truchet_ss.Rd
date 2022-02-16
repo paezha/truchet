@@ -26,5 +26,7 @@ For a discussion of multi-scale Truchet patterns see \url{https://christophercar
 }
 \examples{
 mosaic <- st_truchet_ss()
+plot(mosaic)
 mosaic <- st_truchet_ss(tiles = c("dl", "dr"))
+plot(mosaic)
 }

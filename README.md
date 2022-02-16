@@ -6,14 +6,28 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-This package implements the multi-scale Truchet tiles of [Christopher
-Carlson](https://archive.bridgesmathart.org/2018/bridges2018-39.html) as
-explained in this [blog
-post](https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/).
-This implementation uses the package [{sf}]() to create and manipulate
-spatial objects. Two functions are used to create tiles and then to
-arrange the tiles in a mosaic. Since the tiles and mosaics are simple
-features, they can be plotted using [{ggplot2}]() and `geom_sf()`. In
+This package offers various functions to create Truchet tiles and to
+arrange them in mosaics either using random parameters or by design. The
+package implements:
+
+1.  The single scale Truchet tiles discussed by Smith and Boucher in
+    their 1987 article in [Leonardo](https://doi.org/10.2307/1578535).
+
+2.  Flexible Truchet tiles as discussed in the 2013 paper of Bosch and
+    Colley in [Journal of Mathematics and
+    Art](https://doi.org/10.1080/17513472.2013.838830).
+
+3.  The multi-scale Truchet tiles of [Christopher
+    Carlson](https://archive.bridgesmathart.org/2018/bridges2018-39.html)
+    as explained in this [blog
+    post](https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/).
+
+Under the hood, the functions use the package
+[{sf}](https://r-spatial.github.io/sf/articles/sf1.html) to create and
+manipulate spatial objects. There are functions to create tiles and and
+functions to arrange the tiles in mosaic. Since the tiles and mosaics
+are simple features, they can be plotted using
+[{ggplot2}](https://ggplot2.tidyverse.org/) and `geom_sf()`. In
 addition, further manipulations of the tiles (such as buffering) can be
 done using the functionality of {sf}.
 
@@ -50,10 +64,146 @@ library(purrr)
 library(truchet)
 ```
 
-## Tiles
+## Single scale tiles
 
-These are sample tiles. The complete list of tiles implemented in the
-package appears at the bottom.
+### Tiles implemented
+
+Function `st_truchet_l()` is used to generate single scale, line-based
+tiles. Currently the following tiles are implemented:
+
+``` r
+# Tiles types
+tile_types <- data.frame(type = c("dl", "dr")) %>%
+  mutate(tile = 1:n(),
+         x = 2 * tile %% 2,
+         y = 2 * tile %/% 2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+
+pmap_dfr(list(x_c, y_c, type), st_truchet_l) %>%
+  ggplot() + 
+  geom_sf(size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = type),
+            nudge_y = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+### Assembling a mosaic
+
+Function `st_truchet_ss()` is used to assemble a mosaic. It works with
+pre-set parameters that randomize the choice of tile and placement, but
+also accepts a data frame with inputs for greater control of the mosaic.
+This is a fully random mosaic:
+
+``` r
+mosaic <- st_truchet_ss(xlim = c(-5, 5),
+                        ylim = c(-5, 5))
+  ggplot() +
+  geom_sf(data = mosaic,
+          size = 2)
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+These tiles are composed of simple feature objects of type “LINESTRING”.
+
+## Flexible Truchet tiles
+
+### Tiles implemented
+
+Function `st_truchet_flex()` is used to generate single scale, flexible
+tiles. Currently the following tiles are implemented:
+
+``` r
+# Tiles types
+tile_types <- data.frame(type = c("dl", "dr")) %>%
+  mutate(tile = 1:n(),
+         x = 2 * tile %% 2,
+         y = 2 * tile %/% 2,
+         b = 1/2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+b <- tile_types$b
+
+pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
+  ggplot() + 
+  geom_sf(aes(fill = factor(color)),
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = type),
+            nudge_y = 1)
+#> Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+The function for creating the tiles takes the x and y coordinates for
+placing the tile, the type of tile, and also a parameter `b` (which must
+be between zero and 1) that controls the shape of the diagonal line,
+which is created using the function `bezier()` from the [{bezier}]()
+package. The following figure illustrate the effect of changing `b`:
+
+``` r
+# Tiles types
+tile_types <- data.frame(b = seq(0, 1, length.out = 10)) %>%
+  mutate(tile = 1:n(),
+         type = "dr",
+         x = 2 * tile %% 2,
+         y = 2 * tile %/% 2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+b <- tile_types$b
+
+pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
+  ggplot() + 
+  geom_sf(aes(fill = factor(color)),
+          size = 1) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = as.character(round(b, 2))),
+            nudge_y = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+### Assembling a mosaic
+
+Function `st_truchet_fm()` is used to assemble a mosaic with flexible
+tiles. It works with pre-set parameters that randomize the choice of
+tile and placement, but also accepts a data frame with inputs for
+greater control of the mosaic. This is a fully random mosaic:
+
+``` r
+st_truchet_fm(xlim = c(-5, 5), ylim = c(-5, 5), b = 0.3) %>%
+  ggplot() +
+  geom_sf(aes(fill = factor(color)),
+          size = 1)
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+
+The tiles are simple feature objects of type “POLYGON”.
+
+## Multi-scale tiles
+
+These are examples of multi-scale tiles. The complete list of
+multi-scale tiles implemented in the package appears at the bottom.
 
 ### Tile of type “d” or “\\” and “/” in Carlson’s notation.
 
@@ -70,7 +220,7 @@ st_truchet_p(x = 1, y = 4, type = "dl") %>%
   geom_sf(aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ### Tile of type “-” or “-” and “\|” in Carlson’s notation.
 
@@ -86,7 +236,7 @@ st_truchet_p(x = 0, y = 0, type = "|") %>%
   geom_sf(aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 ### Tile of type “f” in Carlson’s notation.
 
@@ -107,9 +257,9 @@ includes identifiers for tiles and colors.
           aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-## Tile scales
+### Tile scales
 
 Carlson’s tiles are designed to work at multiple scales. At the moment,
 the function to create tiles supports scale 1 (the tiles are squares
@@ -131,9 +281,9 @@ ggplot() +
           aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
-## Assembling a mosaic
+### Assembling a mosaic with multi-scale tiles
 
 It is possible to assemble the tiles into a mosaic manually, but an
 additional function offers some functionality to do this task.
@@ -149,7 +299,7 @@ st_truchet_ms() %>%
           color = NA)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 It is possible to create mosaics with tiles of different sizes; the
 parameters `p1`, `p2`, and `p3` control the proportion of tiles at each
@@ -162,7 +312,7 @@ st_truchet_ms(p1 = 0.6, p2 = 0.3, p3 = 0.1) %>%
           color = NA)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 Mosaics can use different types of tiles:
 
@@ -173,33 +323,33 @@ st_truchet_ms(tiles = c("-", "|", "dl")) %>%
           color = NA)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
-## Tile collection
+### Multi-scale tile collection
 
 These are all the tiles currently implemented:
 
 ``` r
-# Mosaic types
-mosaic_types <- data.frame(type = c("dl", "dr", "-", "|", "fnw", "fne", "fsw", "fse", "+", "+.", "x.", "tn", "ane", "asw")) %>%
+# Tiles types
+tile_types <- data.frame(type = c("dl", "dr", "-", "|", "fnw", "fne", "fsw", "fse", "+", "+.", "x.", "tn", "ane", "asw")) %>%
   mutate(tile = 1:n(),
          x = 2 * tile %% 5,
          y = 2 * tile %/% 5)
 
 # Elements for assemblig the mosaic
-x_c <- mosaic_types$x
-y_c <- mosaic_types$y
-type <- as.character(mosaic_types$type)
-scale_p <- rep(1, nrow(mosaic_types))
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+scale_p <- rep(1, nrow(tile_types))
 
 pmap_dfr(list(x_c, y_c, type, scale_p), st_truchet_p) %>%
   ggplot() + 
   geom_sf(aes(fill = factor(color))) +
-  geom_text(data = mosaic_types,
+  geom_text(data = tile_types,
             aes(x = x,
                 y = y,
                 label = type),
             nudge_y = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />

@@ -14,8 +14,11 @@ st_truchet_ms <- function(df = NULL, p1 = 1, p2 = 0, p3 = 0, tiles = c("dr", "dl
   #' @export
   #' @examples
   #' mosaic <- st_truchet_ms()
+  #' plot(mosaic)
   #' mosaic <- st_truchet_ms(p1 = 0.8, p2 = 0.16, p3 = 0.04)
+  #' plot(mosaic)
   #' mosaic <- st_truchet_ms(p1 = 0.6, p2 = 0.3, p3 = 0.1, tiles = c("|", "-"))
+  #' plot(mosaic)
   #' @note For a discussion of multi-scale Truchet patterns see \url{https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/}
 
   # Validate inputs
@@ -145,6 +148,8 @@ st_truchet_ms <- function(df = NULL, p1 = 1, p2 = 0, p3 = 0, tiles = c("dr", "dl
   y_c <- df$y
   type <- df$tiles
   scale_p <- df$scale_p
+
+  ## NOTE: purrr does not like it when .id is used, complains that geometry column not present: why?
 
   mosaic <- purrr::pmap_dfr(list(x_c, y_c, type, scale_p), st_truchet_p)
 

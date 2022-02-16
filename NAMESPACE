@@ -2,6 +2,8 @@
 
 export("%>%")
 export(st_truchet_dissolve)
+export(st_truchet_flex)
+export(st_truchet_fm)
 export(st_truchet_l)
 export(st_truchet_ms)
 export(st_truchet_p)

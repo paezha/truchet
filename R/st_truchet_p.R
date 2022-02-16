@@ -986,11 +986,10 @@ st_truchet_p <- function(x = 0, y = 0, type = "dl", scale_p = 1){
   ## FINISH TILES
   # position at point (x, y)
   tile <- tile %>%
-    dplyr::mutate(geometry = sf::st_geometry(tile) + c(x, y))
+    dplyr::mutate(geometry = sf::st_geometry(tile) + c(x, y)) %>%
+    sf::st_sf()
 
   ## TILES DONE
-
-
 
   return(tile)
 }

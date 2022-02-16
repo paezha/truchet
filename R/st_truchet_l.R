@@ -12,6 +12,7 @@ st_truchet_l <- function(x = 0, y = 0, type = "dl"){
   #' st_truchet_l(type = "dl")
   #' st_truchet_l(type = "dr")
   #' @note For a discussion of Truchet patterns see \url{http://arearugscarpet.blogspot.com/2014/04/the-curse-of-truchets-tiles.html}
+
   # Validate inputs
 
   checkmate::assertChoice(type, c("dl", "dr"))

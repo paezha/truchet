@@ -1,0 +1,394 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Here I experiment with creating contours of Truchet tiles after seeing some really cool examples (see: https://twitter.com/_sayo_y/status/1488504770755440640).
+
+I will use these packages:
+```{r}
+library(bezier)
+library(lwgeom)
+library(MexBrewer) 
+library(sf)
+library(tidyverse)
+library(truchet)
+```
+
+Test the bezier function:
+```{r}
+t <- seq(0, 
+         1, 
+         length=50)
+
+b <- 1.0 #must be a value between 0 and 1
+
+p <- matrix( c(0, 0, 
+               b, 1 - b,
+               1, 1),
+             nrow=3,
+             ncol=2,
+             byrow=TRUE
+)
+
+bezier_points_2 <- bezier(t = t, 
+                          p = p)
+```
+
+Convert to sf:
+```{r}
+line_1 <- data.frame(id = 1, 
+                     geometry = st_linestring(bezier_points_2) %>% 
+                       st_geometry()) %>% 
+  st_sf()
+```
+
+Plot:
+```{r}
+ggplot() + geom_sf(data = line_1)
+```
+
+Create 1 by 1 tile:
+```{r}
+#  Define square polygon
+tile <- matrix(c(0, 0,
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0),
+               ncol = 2,
+               byrow = TRUE)
+
+# Convert coordinates to polygons and then to simple features
+tile <- data.frame(geometry = sf::st_polygon(list(tile)) %>%
+                     sf::st_sfc()) %>%
+  sf::st_as_sf()
+
+## BASE TILE DONE
+```
+
+```{r}
+tile <- tile %>%
+  st_split(line_1) %>%
+  st_collection_extract() %>%
+  mutate(color = 2:1)
+```
+
+Plot:
+```{r}
+ggplot() + 
+  geom_sf(data = tile,
+          aes(fill = color))
+```
+
+Define a function:
+```{r}
+st_truchet_flex <- function(x = 0, y = 0, type = "dl", b = 1/2){
+  
+  #' Flexible Truchet tiles
+  #'
+  #' @param x A number with the x coordinate of the center of the tile
+  #' @param y A number with the y coordinate of the center of the tile
+  #' @param type A single character to designate a type of tile; currently supported options are "dl", "dr"
+  #' @param b A number between zero and one that controls the boundary between the two parts of the tile
+  #' @return A list with one or more objects of type \code{sf} representing one or more tiles depending on type
+  #' @importFrom rlang .data
+  #' @export
+  #' @examples
+  #' st_truchet_flex(type = "dl")
+  #' st_truchet_flex(type = "dr")
+  #' @note For a discussion of Truchet patterns see: Robert Bosch & Urchin Colley (2013) Figurative mosaics from flexible Truchet tiles, Journal of Mathematics and the Arts, 7:3-4, 122-135, \url{10.1080/17513472.2013.838830}
+  
+  # Validate inputs
+  checkmate::assertChoice(type, c("dl", "dr"))
+  # b must be a value beween zero and 1
+  checkmate::assert_number(b, lower = 0, upper = 1)
+  
+  ## CREATE BASE TILE
+  #  Define square polygon
+  tile <- matrix(c(0, 0,
+                   0, 1,
+                   1, 1,
+                   1, 0,
+                   0, 0),
+                 ncol = 2,
+                 byrow = TRUE)
+  
+  # Convert coordinates to polygons and then to simple features
+  tile <- data.frame(geometry = sf::st_polygon(list(tile)) %>%
+                       sf::st_sfc()) %>%
+    sf::st_as_sf()
+  
+  ## BASE TILE DONE
+  
+  # Tile types
+  
+  switch(type,
+         
+         "dl" ={
+           ## ADORNMENTS
+           t <- seq(0, 
+                    1, 
+                    length=50)
+           
+           p <- matrix( c(0, 0, 
+                          b, 1 - b,
+                          1, 1),
+                        nrow=3,
+                        ncol=2,
+                        byrow=TRUE
+           )
+           
+           line_1 <- bezier::bezier(t = t, 
+                                    p = p)
+           
+           line_1 <- data.frame(id = 1, 
+                                geometry = sf::st_linestring(line_1) %>% 
+                                  sf::st_geometry()) %>% 
+             sf::st_sf()
+           
+           tile <- tile %>%
+             lwgeom::st_split(line_1) %>%
+             sf::st_collection_extract() %>%
+             dplyr::mutate(color = 2:1)
+           ## ADORNMENTS DONE
+         },
+         
+         "dr" ={
+           ## ADORNMENTS
+           t <- seq(0, 
+                    1, 
+                    length=50)
+           
+           p <- matrix( c(1, 1, 
+                          b, 1 - b,
+                          0, 0),
+                        nrow=3,
+                        ncol=2,
+                        byrow=TRUE
+           )
+           
+           line_1 <- bezier::bezier(t = t, 
+                                    p = p)
+           
+           line_1 <- data.frame(id = 1, 
+                                geometry = sf::st_linestring(line_1) %>% 
+                                  sf::st_geometry()) %>% 
+             sf::st_sf()
+           
+           tile <- tile %>%
+             lwgeom::st_split(line_1) %>%
+             sf::st_collection_extract() %>%
+             dplyr::mutate(color = 2:1)
+           ## ADORNMENTS DONE
+         }
+  )
+  
+  # Translate so that the tiles are centered on the point (0, 0)
+  tile <- tile %>%
+    dplyr::mutate(geometry = sf::st_geometry(tile) + c(-0.5, - 0.5))
+  
+  ## FINISH TILES
+  # position at point (x, y)
+  tile <- tile %>%
+    dplyr::mutate(geometry = sf::st_geometry(tile) + c(x, y))
+  
+  ## TILES DONE
+  
+  return(tile)
+}
+```
+
+Try function:
+```{r}
+st_truchet_flex(type = "dl", b = 1/2) %>%
+  plot()
+```
+
+Design data frame with alternating values of b according to a checkerboard pattern:
+```{r}
+df <- data.frame(expand.grid(x = 1:10, 
+                             y = 1:10))
+
+df <- df %>% 
+  # The modulus of x + y can be used to create a checkerboard pattern
+  mutate(tiles = case_when((x + y) %% 2 == 0 ~ "dr",
+                           (x + y) %% 2 == 1 ~ "dr"),
+         b = ifelse((x + y) %% 2 == 1, 1/5, 4/5))
+```
+
+Create mosaic and join coordinates. The coordinates can be used to modify the color settings according to a checkerboard pattern:
+```{r}
+mosaic <- st_truchet_fm(df = df) %>%
+  left_join(df %>%
+              mutate(id = as.character(1:n())),
+            by = "id") %>%
+  mutate(color = ifelse((x + y) %% 2 == 1, color, abs(color  - 3)))
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA)
+```
+
+Data frame with random values of b:
+```{r}
+df <- data.frame(expand.grid(x = 1:10, 
+                             y = 1:10))
+
+df <- df %>% 
+  # The modulus of x + y can be used to create a checkerboard pattern
+  mutate(tiles = case_when((x + y) %% 2 == 0 ~ "dr",
+                           (x + y) %% 2 == 1 ~ "dr"),
+         b = runif(n()))
+```
+
+Create mosaic and join coordinates. The coordinates can be used to modify the color settings according to a checkerboard pattern:
+```{r}
+mosaic <- st_truchet_fm(df = df) %>%
+  left_join(df %>%
+              mutate(id = as.character(1:n())),
+            by = "id") %>%
+  mutate(color = ifelse((x + y) %% 2 == 1, color, abs(color  - 3)))
+```
+
+Plot:
+```{r}
+mosaic %>%
+  st_truchet_dissolve() %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = "white")
+```
+
+Data frame with random selection of tiles and random values of b:
+```{r}
+df <- data.frame(expand.grid(x = 1:10, 
+                             y = 1:10))
+
+df <- df %>% 
+  # The modulus of x + y can be used to create a checkerboard pattern
+  mutate(tiles = sample(c("dr", "dl"), n(), replace = TRUE),
+         b = runif(n()))
+```
+
+Create mosaic and join coordinates. The coordinates can be used to modify the color settings according to a checkerboard pattern:
+```{r}
+mosaic <- st_truchet_fm(df = df) %>%
+  left_join(df %>%
+              mutate(id = as.character(1:n())),
+            by = "id") %>%
+  mutate(color = ifelse((x + y) %% 2 == 1, color, abs(color  - 3)))
+```
+
+Plot:
+```{r}
+mosaic %>%
+  st_truchet_dissolve() %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = "white")
+```
+
+Plot after adding some buffering:
+```{r}
+ggplot() + 
+  geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>% 
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "black",
+          size = 0.5) +
+  geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>%
+            st_buffer(dist = c(-0.1, -0.2)) %>% 
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "black",
+          size = 0.5) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+More buffers:
+```{r}
+ggplot() + 
+  geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>% 
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "black",
+          size = 0.5) +
+  geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>%
+            st_buffer(dist = c(-0.1)) %>% 
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "black",
+          size = 0.5) +
+  geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>%
+            st_buffer(dist = c(-0.2)) %>% 
+            mutate(id = sample(1:n(), 
+                               n())),
+          aes(fill = id),
+          color = "black",
+          size = 0.5) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("flex-tiles-random-revolucion-buffers.png")
+```
+
+Repeat with the checkerboard arrangement and random values of b:
+```{r}
+df <- data.frame(expand.grid(x = 1:10, 
+                             y = 1:10))
+
+df <- df %>% 
+  # The modulus of x + y can be used to create a checkerboard pattern
+  mutate(tiles = case_when((x + y) %% 2 == 0 ~ "dr",
+                           (x + y) %% 2 == 1 ~ "dr"),
+         b = runif(n(), 1/4, 1/2))
+```
+
+Create mosaic and join coordinates. The coordinates can be used to modify the color settings according to a checkerboard pattern:
+```{r}
+mosaic <- st_truchet_fm(df = df) %>%
+  left_join(df %>%
+              mutate(id = as.character(1:n())),
+            by = "id") %>%
+  mutate(color = ifelse((x + y) %% 2 == 1, color, abs(color  - 3)))
+```
+
+Plot:
+```{r}
+ggplot() +
+geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>%
+          mutate(color = color + runif(n(), -0.2, 0.2)),
+        aes(fill = color),
+          color = "white",
+          size = 0.5) +
+  geom_sf(data = mosaic %>%
+            st_truchet_dissolve() %>%
+            st_buffer(dist = c(-0.1)) %>%
+          mutate(color = color + runif(n(), -0.2, 0.2)),
+          aes(fill = color),
+          color = "white",
+          size = 0.5) +
+  scale_fill_gradientn(colors = mex.brewer("Revolucion")) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("flex-tiles-revolucion-buffers.png")
+```

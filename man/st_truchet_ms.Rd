@@ -40,6 +40,9 @@ For a discussion of multi-scale Truchet patterns see \url{https://christophercar
 }
 \examples{
 mosaic <- st_truchet_ms()
+plot(mosaic)
 mosaic <- st_truchet_ms(p1 = 0.8, p2 = 0.16, p3 = 0.04)
+plot(mosaic)
 mosaic <- st_truchet_ms(p1 = 0.6, p2 = 0.3, p3 = 0.1, tiles = c("|", "-"))
+plot(mosaic)
 }
