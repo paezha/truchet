@@ -123,11 +123,11 @@ tiles. Currently the following tiles are implemented:
 
 ``` r
 # Tiles types
-tile_types <- data.frame(type = c("dl", "dr")) %>%
+tile_types <- data.frame(type = c("Al", "Bl", "Cl", "Dl","Ac", "Bc", "Cc", "Dc")) %>%
   mutate(tile = 1:n(),
-         x = 2 * tile %% 2,
-         y = 2 * tile %/% 2,
-         b = 1/2)
+         x = 2 * tile %% 5,
+         y = 2 * tile %/% 5,
+         b = 1/3)
 
 # Elements for assembling the mosaic
 x_c <- tile_types$x
@@ -150,18 +150,21 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 The function for creating the tiles takes the x and y coordinates for
-placing the tile, the type of tile, and also a parameter `b` (which must
-be between zero and 1) that controls the shape of the diagonal line,
-which is created using the function `bezier()` from the [{bezier}]()
-package. The following figure illustrate the effect of changing `b`:
+placing the tile, the type of tile, and also a parameter `b`
+(0 \> *b* \> 1) that controls the shape of the diagonal line. In the
+case of tiles “Al” through “Dl” the boundary is made of straight lines.
+In the case of tiles “Ac” through “Dc”, the boundary is a curve created
+using the function `bezier()` from the
+[{bezier}](https://CRAN.R-project.org/package=bezier) package. The
+following figure illustrate the effect of changing `b`:
 
 ``` r
 # Tiles types
-tile_types <- data.frame(b = seq(0, 1, length.out = 10)) %>%
+tile_types <- data.frame(b = seq(1/10, 9/10, length.out = 10)) %>%
   mutate(tile = 1:n(),
-         type = "dr",
-         x = 2 * tile %% 2,
-         y = 2 * tile %/% 2)
+         type = "Al",
+         x = 2 * tile %% 5,
+         y = 2 * tile %/% 5)
 
 # Elements for assembling the mosaic
 x_c <- tile_types$x

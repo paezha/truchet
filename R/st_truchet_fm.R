@@ -1,4 +1,4 @@
-st_truchet_fm <- function(df = NULL, tiles = c("dr", "dl"), b = 1/2, xlim = c(1, 3), ylim = c(1, 6)){
+st_truchet_fm <- function(df = NULL, tiles = c("Al", "Cl"), b = 1/2, xlim = c(1, 3), ylim = c(1, 6)){
 
   #' Mosaics with flexible Truchet tiles
   #'

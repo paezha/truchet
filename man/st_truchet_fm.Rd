@@ -6,7 +6,7 @@
 \usage{
 st_truchet_fm(
   df = NULL,
-  tiles = c("dr", "dl"),
+  tiles = c("Al", "Cl"),
   b = 1/2,
   xlim = c(1, 3),
   ylim = c(1, 6)

@@ -4,14 +4,14 @@
 \alias{st_truchet_flex}
 \title{Flexible Truchet tiles}
 \usage{
-st_truchet_flex(x = 0, y = 0, type = "dl", b = 1/2)
+st_truchet_flex(x = 0, y = 0, type = "Al", b = 1/2)
 }
 \arguments{
 \item{x}{A number with the x coordinate of the center of the tile}
 
 \item{y}{A number with the y coordinate of the center of the tile}
 
-\item{type}{A single character to designate a type of tile; currently supported options are "dl", "dr"}
+\item{type}{A single character to designate a type of tile; currently supported options are "Ac", "Bc", "Cc", "Dc", "As", "Bs", "Cs", "Ds"}
 
 \item{b}{A number between zero and one that controls the shape of the boundary between the two parts of the tile}
 }
@@ -25,6 +25,6 @@ Flexible Truchet tiles
 For a discussion of Truchet patterns see: Robert Bosch & Urchin Colley (2013) Figurative mosaics from flexible Truchet tiles, Journal of Mathematics and the Arts, 7:3-4, 122-135, \url{10.1080/17513472.2013.838830}
 }
 \examples{
-st_truchet_flex(type = "dl")
-st_truchet_flex(type = "dr")
+st_truchet_flex(type = "Al")
+st_truchet_flex(type = "Cl")
 }
