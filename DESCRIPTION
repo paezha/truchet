@@ -15,6 +15,7 @@ Imports:
     checkmate,
     dplyr,
     ggplot2,
+    imager,
     lwgeom,
     magrittr,
     methods,
