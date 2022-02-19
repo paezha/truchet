@@ -8,6 +8,7 @@ Here I experiment with creating contours of Truchet tiles after seeing some real
 I will use these packages:
 ```{r}
 library(bezier)
+library(imager)
 library(lwgeom)
 library(MexBrewer) 
 library(sf)
@@ -328,8 +329,8 @@ seed <- 84467
 set.seed(seed)
 
 # Coordinates for tiles
-df <- data.frame(expand.grid(x = 1:10, 
-                             y = 1:10))
+df <- data.frame(expand.grid(x = 1:4, 
+                             y = 1:4))
 
 # Randomly select tiles
 tiles <- sample(c("Al", "Bl", "Cl", "Dl"), size = 4, replace = TRUE)
@@ -364,7 +365,7 @@ ggplot() +
   theme_void() +
   theme(legend.position = "none")
 
-ggsave(glue::glue("truchet_2x2_{seed}.png"))
+#ggsave(glue::glue("truchet_2x2_{seed}.png"))
 ```
 
 Take a 4 by 4 mosaic and assign tiles randomly:
@@ -521,9 +522,14 @@ frida
 plot(frida)
 ```
 
+```{r}
+frida_sel <- imsub(frida,x %inr% c(109,500))
+```
+
+
 Resize image:
 ```{r}
-frida_rs <- imresize(frida, scale = 1/3, interpolation = 6)
+frida_rs <- imresize(frida_sel, scale = 1/4, interpolation = 6)
 ```
 
 Convert to grayscale and to data frame:
@@ -533,7 +539,44 @@ frida_df <- frida_rs %>%
   as.data.frame()
 ```
 
-Use this data frame to design truchet mosaic:
+Use this data frame to design truchet mosaic according to the pattern "Design A":
+```{r}
+df <- frida_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         tiles = "Al",
+         b = 1 - value)
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("frida-truchet-design-a.png")
+```
+
+Use this data frame to design truchet mosaic using Design C:
 ```{r}
 df <- frida_df %>% 
   # Reverse the y axis
@@ -570,10 +613,719 @@ mosaic %>%
   theme_void() +
   theme(legend.position = "none")
 
-ggsave("frida-truchet.png")
+ggsave("frida-truchet-design-c.png")
+```
+
+Frida in Design D:
+```{r}
+df <- frida_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus can be used to create a checkerboard pattern
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ "Bl",
+                           x %% 2 == 0 & y %% 2 == 0 ~ "Al",
+                           x %% 2 == 1 & y %% 2 == 1 ~ "Cl",
+                           x %% 2 == 0 & y %% 2 == 1 ~ "Dl"),
+         b = case_when(x %% 2 == 1 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 1 & y %% 2 == 1 ~ value,
+                       x %% 2 == 0 & y %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("frida-truchet-design-d.png")
 ```
 
 
+Frida in the (mistaken) Design E:
+```{r}
+df <- frida_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ "Al",
+                           x %% 2 == 0 & y %% 2 == 0 ~ "Dl",
+                           x %% 2 == 1 & y %% 2 == 1 ~ "Bl",
+                           x %% 2 == 0 & y %% 2 == 1 ~ "Cl"),
+         b = case_when(x %% 2 == 1 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 0 ~ value,
+                       x %% 2 == 1 & y %% 2 == 1 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.99 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot (notice the difference with figure 2 in Bosch and Colley):
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("frida-truchet-design-wrong-e.png")
+```
+
+
+## Garalicious
+
+Read another image:
+```{r}
+gara <- load.image("gara-one.jpg")
+```
+
+Image info:
+```{r}
+gara
+```
+
+```{r}
+plot(gara)
+```
+
+```{r}
+gara_sel <- imsub(gara,
+                  x %inr% c(250, 849), 
+                  y %inr% c(0, 900))
+```
+
+Resize image:
+```{r}
+gara_rs <- imresize(gara_sel, scale = 1/7, interpolation = 6)
+```
+
+Convert to grayscale and to data frame:
+```{r}
+gara_df <- gara_rs %>%
+  grayscale() %>% 
+  as.data.frame()
+```
+
+Use this data frame to design truchet mosaic according to the pattern "Design A":
+```{r}
+df <- gara_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         tiles = "Al",
+         b = 1 - value)
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("gara-truchet-design-a.png")
+```
+
+Use this data frame to design truchet mosaic using Design C:
+```{r}
+df <- gara_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when((x + y) %% 2 == 0 ~ "Al",
+                           (x + y) %% 2 == 1 ~ "Cl"),
+         b = case_when((x + y) %% 2 == 0 ~ 1 - value,
+                       (x + y) %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("gara-truchet-design-c.png")
+```
+
+Gara in Design D:
+```{r}
+df <- gara_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus can be used to create a checkerboard pattern
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ "Bl",
+                           x %% 2 == 0 & y %% 2 == 0 ~ "Al",
+                           x %% 2 == 1 & y %% 2 == 1 ~ "Cl",
+                           x %% 2 == 0 & y %% 2 == 1 ~ "Dl"),
+         b = case_when(x %% 2 == 1 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 1 & y %% 2 == 1 ~ value,
+                       x %% 2 == 0 & y %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  #scale_fill_gradientn(colors = mex.brewer("Frida")) +
+  scale_fill_distiller(palette = "PuBu", direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("gara-truchet-design-d.png")
+```
+
+
+Gara in the (mistaken) Design E:
+```{r}
+df <- gara_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ "Al",
+                           x %% 2 == 0 & y %% 2 == 0 ~ "Dl",
+                           x %% 2 == 1 & y %% 2 == 1 ~ "Bl",
+                           x %% 2 == 0 & y %% 2 == 1 ~ "Cl"),
+         b = case_when(x %% 2 == 1 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 0 ~ value,
+                       x %% 2 == 1 & y %% 2 == 1 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.99 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot (notice the difference with figure 2 in Bosch and Colley):
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("gara-truchet-design-wrong-e.png")
+```
+
+
+## Belen
+
+Read another image:
+```{r}
+belen <- load.image("belen.jpg")
+```
+
+Image info:
+```{r}
+belen
+```
+
+```{r}
+plot(belen)
+```
+
+```{r}
+belen_sel <- imsub(belen,
+                   x %inr% c(100, 500), 
+                   y %inr% c(22, 622))
+```
+
+Resize image:
+```{r}
+belen_rs <- imresize(belen_sel, scale = 1/7, interpolation = 6)
+```
+
+Convert to grayscale and to data frame:
+```{r}
+belen_df <- belen_rs %>%
+  grayscale() %>% 
+  as.data.frame()
+```
+
+Use this data frame to design truchet mosaic according to the pattern "Design A":
+```{r}
+df <- belen_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         tiles = "Al",
+         b = 1 - value)
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  #scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  scale_fill_distiller(direction = 1) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("belen-truchet-design-a.png")
+```
+
+Use this data frame to design truchet mosaic using Design C:
+```{r}
+df <- belen_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when((x + y) %% 2 == 0 ~ "Al",
+                           (x + y) %% 2 == 1 ~ "Cl"),
+         b = case_when((x + y) %% 2 == 0 ~ 1 - value,
+                       (x + y) %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  #scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  scale_fill_distiller(direction = 1) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("belen-truchet-design-c.png")
+```
+
+Belen in Design D:
+```{r}
+df <- belen_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus can be used to create a checkerboard pattern
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ "Bl",
+                           x %% 2 == 0 & y %% 2 == 0 ~ "Al",
+                           x %% 2 == 1 & y %% 2 == 1 ~ "Cl",
+                           x %% 2 == 0 & y %% 2 == 1 ~ "Dl"),
+         b = case_when(x %% 2 == 1 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 1 & y %% 2 == 1 ~ value,
+                       x %% 2 == 0 & y %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot:
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  #scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  scale_fill_distiller(direction = 1) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("belen-truchet-design-d.png")
+```
+
+
+Belen in the (mistaken) Design E:
+```{r}
+df <- belen_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ "Al",
+                           x %% 2 == 0 & y %% 2 == 0 ~ "Dl",
+                           x %% 2 == 1 & y %% 2 == 1 ~ "Bl",
+                           x %% 2 == 0 & y %% 2 == 1 ~ "Cl"),
+         b = case_when(x %% 2 == 1 & y %% 2 == 0 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 0 ~ value,
+                       x %% 2 == 1 & y %% 2 == 1 ~ 1 - value,
+                       x %% 2 == 0 & y %% 2 == 1 ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.99 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot (notice the difference with figure 2 in Bosch and Colley):
+```{r}
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  #scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  scale_fill_distiller(direction = 1) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave("belen-truchet-design-wrong-e.png")
+```
+
+Random placement of tiles?
+```{r}
+# Set seed
+seed <- 84467
+set.seed(seed)
+
+# Coordinates for tiles
+df <- data.frame(expand.grid(x = 1:2, 
+                             y = 1:2))
+
+# Randomly select tiles
+tiles <- sample(c("Al", "Bl", "Cl", "Dl"), size = 4, replace = TRUE)
+
+value <- 3/4
+# Design the mosaic
+df <- df %>% 
+  # The modulus of x + y can be used to create the desired pattern
+  mutate(tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ tiles[1],
+                           x %% 2 == 0 & y %% 2 == 0 ~ tiles[2],
+                           x %% 2 == 1 & y %% 2 == 1 ~ tiles[3],
+                           x %% 2 == 0 & y %% 2 == 1 ~ tiles[4]),
+         # Important! Notice the adjustment to the values to ensure that the area correctly reflects the underlying darkness value
+         b = case_when(tiles == "Al" ~ value, 
+                       tiles == "Bl" ~ value, 
+                       tiles == "Cl" ~ 1 - value, 
+                       tiles == "Dl" ~ 1 - value))
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df)
+
+# Plot:
+ggplot() +
+  geom_sf(data = mosaic,
+          aes(fill = color),
+          color = NA,
+          size = 0.5) + 
+  scale_fill_distiller(direction = 1) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+#ggsave(glue::glue("truchet_2x2_{seed}.png"))
+```
+
+Belen with a random mosaic:
+```{r}
+# Set seed
+seed <- 1085
+set.seed(seed)
+
+# Randomly select tiles
+tiles <- sample(c("Al", "Bl", "Cl", "Dl"), size = 4, replace = TRUE)
+
+value <- 3/4
+# Design the mosaic
+df <- belen_df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ tiles[1],
+                           x %% 2 == 0 & y %% 2 == 0 ~ tiles[2],
+                           x %% 2 == 1 & y %% 2 == 1 ~ tiles[3],
+                           x %% 2 == 0 & y %% 2 == 1 ~ tiles[4]),
+         # Important! Notice the adjustment to the values to ensure that the area correctly reflects the underlying darkness value
+         b = case_when(tiles == "Al" ~ 1- value, 
+                       tiles == "Bl" ~ 1- value, 
+                       tiles == "Cl" ~ value, 
+                       tiles == "Dl" ~ value))
+```
+
+Create mosaic:
+```{r}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.99 + 0.001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Plot (notice the difference with figure 2 in Bosch and Colley):
+```{r}
+mosaic %>%
+  st_truchet_dissolve() %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  #scale_fill_gradientn(colors = mex.brewer("Frida")) + 
+  scale_fill_distiller(direction = 1) + 
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave(glue::glue("belen-truchet-{seed}.png"))
+```
+
+
+Random placement of tiles?
+```{r}
+# Tiles types
+tile_types <- data.frame(type = c("Al", "Bl", "Cl", "Dl")) %>%
+  mutate(x = c(1, 2.5, 1, 2.5),
+         y = c(2.5, 2.5, 1, 1),
+         b = 1/2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+b <- tile_types$b
+
+pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("A", "B", "C", "D")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+  
+
+#ggsave(glue::glue("truchet_2x2_{seed}.png"))
+```
+
+```{r}
+# Tiles types
+tile_types <- data.frame(type = c("Al", "Al", "Al", "Al")) %>%
+  mutate(x = c(1, 2, 1, 2),
+         y = c(2, 2, 1, 1),
+         b = 1/2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+b <- tile_types$b
+
+pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("Design A", "", "", "")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+```{r}
+# Tiles types
+tile_types <- data.frame(type = c("Al", "Cl", "Cl", "Al")) %>%
+  mutate(x = c(1, 2, 1, 2),
+         y = c(2, 2, 1, 1),
+         b = 1/2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+b <- tile_types$b
+
+pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("Design C", "", "", "")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+```{r}
+# Tiles types
+tile_types <- data.frame(type = c("Al", "Dl", "Bl", "Cl")) %>%
+  mutate(x = c(1, 2, 1, 2),
+         y = c(2, 2, 1, 1),
+         b = 1/2)
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$type)
+b <- tile_types$b
+
+pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("Matrix [A, D; B, C]", "", "", "")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+```
 
 <!--
 
