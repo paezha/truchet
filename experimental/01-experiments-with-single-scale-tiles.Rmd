@@ -202,3 +202,149 @@ ggplot() +
 ggsave("single-scale-polygons-revolucion-positive-buffers-3.png")
 ```
 
+## Using images
+
+```{r}
+library(imager)
+```
+
+
+Read the image using `imager::load.image()`:
+```{r}
+marilyn <- load.image("marilyn.jpg")
+```
+
+Image info:
+```{r}
+marilyn
+```
+
+```{r}
+plot(marilyn)
+```
+
+Resize image:
+```{r}
+marilyn_rs <- imresize(marilyn, scale = 1/8, interpolation = 6)
+```
+
+Convert to data frame:
+```{r}
+marilyn_df <- marilyn_rs %>%
+  #grayscale() %>% 
+  as.data.frame() %>%
+  mutate(y = -(y - max(y)))
+```
+
+```{r}
+ggplot() +
+  geom_point(data = marilyn_df,
+             aes(x, y, color = value)) +
+  coord_equal()
+```
+
+Create data frame for the mosaic:
+```{r}
+xlim <- c(min(marilyn_df$x)/8 - 2, max(marilyn_df$x)/8 + 2)
+ylim <- c(min(marilyn_df$y)/8 - 2, max(marilyn_df$y)/8 + 2)
+
+# Create a data frame with the spots for tiles
+mosaic <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                         y = seq(ylim[1], ylim[2], 1)) %>%
+  mutate(tiles = sample(c("dl", "dr"), n(), replace = TRUE))
+```
+
+Create mosaic using the designed container:
+```{r}
+mosaic <- st_truchet_ss(df = mosaic)
+```
+
+Plot mosaic:
+```{r}
+ggplot() +
+  geom_sf(data = mosaic,
+          size = 1)
+```
+
+Now this needs to be scaled to the size of the image. First get the union of the geometries:
+```{r}
+mosaic_union <- st_union(mosaic)
+```
+
+Then scale and recenter:
+```{r}
+mosaic_union <- mosaic_union * 8 
+```
+
+Create a polygon to contain the mosaic:
+```{r}
+ container <- matrix(c(min(marilyn_df$x), min(marilyn_df$y),
+                   min(marilyn_df$x), max(marilyn_df$y),
+                   max(marilyn_df$x), max(marilyn_df$y),
+                   max(marilyn_df$x), min(marilyn_df$y),
+                   min(marilyn_df$x), min(marilyn_df$y)),
+                 ncol = 2,
+                 byrow = TRUE)
+
+  # Convert coordinates to polygons and then to simple features
+  container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                       sf::st_sfc()) %>%
+    sf::st_as_sf()
+```
+
+Split container
+```{r}
+mosaic <- container %>%
+  st_split(mosaic_union)
+```
+
+Extract geometries:
+```{r}
+mosaic <- mosaic %>% 
+  st_collection_extract(c("POLYGON"))
+```
+
+Create buffers:
+```{r}
+mosaic_1 <- mosaic %>%
+  st_buffer(dist = -1)
+
+mosaic_2 <- mosaic %>%
+  st_buffer(dist = -2)
+
+mosaic_3 <- mosaic %>%
+  st_buffer(dist = -3)
+```
+
+
+Plot mosaic:
+```{r}
+ggplot() +
+  geom_point(data = marilyn_df,
+             aes(x, y, color = value),
+             size = 1.35,
+             shape = 15) +
+  geom_sf(data = mosaic,
+          color = "white",
+          fill = NA,
+          size = 0.2) +
+    geom_sf(data = mosaic_1,
+          color = "white",
+          fill = NA,
+          size = 0.2) +
+  geom_sf(data = mosaic_2,
+          color = "white",
+          fill = NA,
+          size = 0.2) +
+  geom_sf(data = mosaic_3,
+          color = "white",
+          fill = NA,
+          size = 0.2) +
+  coord_sf(expand = FALSE) +
+  scale_color_gradientn(colors = rev(mex.brewer("Aurora"))) +
+  #scale_color_gradient(low = "black", high = "white") +
+  theme_void() + 
+  theme(legend.position = "none")
+
+ggsave("marilyn-truchet.png")
+```

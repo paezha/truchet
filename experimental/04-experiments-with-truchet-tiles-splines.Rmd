@@ -442,7 +442,6 @@ library(imager)
 
 Read the image using `imager::load.image()`:
 ```{r}
-#melville <- image_read("melville_lg.jpg")
 elvis <- load.image("elvis.jpg")
 ```
 
