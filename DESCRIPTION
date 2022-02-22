@@ -14,8 +14,6 @@ Imports:
     bezier,
     checkmate,
     dplyr,
-    ggplot2,
-    imager,
     lwgeom,
     magrittr,
     methods,
@@ -24,4 +22,11 @@ Imports:
     sf,
     tidyr
 Suggests: 
-    rmarkdown
+    rmarkdown,
+    ggplot2,
+    knitr,
+    imager
+VignetteBuilder: 
+    ggplot2,
+    knitr,
+    imager
