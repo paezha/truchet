@@ -51,6 +51,7 @@
     <a class="dropdown-item" href="../articles/a01-designing-mosaics.html">Designing Mosaics</a>
     <a class="dropdown-item" href="../articles/a02-tiles-mosaics-as-sf.html">Working with tiles and mosaics as `sf` objects</a>
     <a class="dropdown-item" href="../articles/a03-figurative-mosaics.html">Figurative Mosaics with Flexible Tiles</a>
+    <a class="dropdown-item" href="../articles/a04-figurative-mosaics-variable-width.html">Figurative mosaics with variable-width lines</a>
   </div>
 </li>
       </ul>
@@ -58,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/paezha/truchet/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -72,14 +80,14 @@
       <img src="../logo.png" class="logo" alt=""><h1>Figurative Mosaics with Flexible Tiles</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/paezha/truchet/blob/HEAD/vignettes/articles/a03-figurative-mosaics.Rmd" class="external-link"><code>vignettes/articles/a03-figurative-mosaics.Rmd</code></a></small>
       <div class="d-none name"><code>a03-figurative-mosaics.Rmd</code></div>
     </div>
 
     
     
 <p>Flexible Truchet tiles are a fantastic tool for creating figurative mosaics. The technique was described by Bosch and Colley in a 2013 paper in the <a href="https://doi.org/10.1080/17513472.2013.838830" class="external-link">Journal of Mathematics and the Arts</a>.</p>
-<p>This article shows how to use {truchet} to generate figurative mosaics. In addition to {truchet}, we need <a href="https://dplyr.tidyverse.org/index.htm" class="external-link">{dplyer}</a>, <a href="https://ggplot2.tidyverse.org/" class="external-link">{ggplot2}</a>, and <a href="https://dahtah.github.io/imager/imager.html" class="external-link">{imager}</a>, <a href="https://purrr.tidyverse.org/" class="external-link">{purrr}</a>, and <a href="https://r-spatial.github.io/sf/" class="external-link">{sf}</a>:</p>
+<p>This article shows how to use {truchet} to generate figurative mosaics. In addition to {truchet}, we need <a href="https://dplyr.tidyverse.org/index.htm" class="external-link">{dplyr}</a>, <a href="https://ggplot2.tidyverse.org/" class="external-link">{ggplot2}</a>, and <a href="https://dahtah.github.io/imager/imager.html" class="external-link">{imager}</a>, <a href="https://purrr.tidyverse.org/" class="external-link">{purrr}</a>, and <a href="https://r-spatial.github.io/sf/" class="external-link">{sf}</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 <span class="co">#&gt; </span>
@@ -322,7 +330,7 @@ C &amp; A
 
 <span class="co"># Calculate time</span>
 <span class="va">end_time</span> <span class="op">-</span> <span class="va">start_time</span>
-<span class="co">#&gt; Time difference of 44.21106 secs</span></code></pre></div>
+<span class="co">#&gt; Time difference of 47.26906 secs</span></code></pre></div>
 <p>It takes about 43 seconds to process an image of 61 by 76 pixels.</p>
 <p>Since the mosaic is a simple features data frame it can be plotted using <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf()</a></code> in {ggplot2}:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -416,7 +424,7 @@ C &amp; D
 
 <span class="co"># Calculate time</span>
 <span class="va">end_time</span> <span class="op">-</span> <span class="va">start_time</span>
-<span class="co">#&gt; Time difference of 58.15566 secs</span></code></pre></div>
+<span class="co">#&gt; Time difference of 1.035176 mins</span></code></pre></div>
 <p>It takes about 52 seconds to process this mosaic with 6084 tiles. This is the resulting mosaic:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mosaic</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
