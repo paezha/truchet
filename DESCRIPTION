@@ -1,6 +1,6 @@
 Package: truchet
 Title: Package for creating Truchet tiles and random mosaics
-Version: 0.0.0.9500
+Version: 0.0.0.9006
 Authors@R: 
     person("Antonio", "Páez", , "paezha@mcmaster.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6912-9919"))
@@ -9,7 +9,8 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
-URL: https://github.com/paezha/truchet
+URL: https://paezha.github.io/truchet/, https://github.com/paezha/truchet
+BugReports: https://github.com/paezha/truchet/issues
 Imports: 
     bezier,
     checkmate,
@@ -30,4 +31,3 @@ VignetteBuilder:
     ggplot2,
     knitr,
     imager
-BugReports: https://github.com/paezha/truchet/issues
