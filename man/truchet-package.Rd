@@ -15,6 +15,7 @@ Useful links:
 \itemize{
   \item \url{https://paezha.github.io/truchet/}
   \item \url{https://github.com/paezha/truchet}
+  \item Report bugs at \url{https://github.com/paezha/truchet/issues}
 }
 
 }
