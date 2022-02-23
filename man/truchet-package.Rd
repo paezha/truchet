@@ -14,6 +14,7 @@ This package includes utility functions to create Truchet tiles and arrange them
 Useful links:
 \itemize{
   \item \url{https://paezha.github.io/truchet/}
+  \item \url{https://github.com/paezha/truchet}
 }
 
 }

@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 
 Flexible Truchet tiles are a fantastic tool for creating figurative mosaics. The technique was described by Bosch and Colley in a 2013 paper in the [Journal of Mathematics and the Arts](https://doi.org/10.1080/17513472.2013.838830).
 
-This article shows how to use {truchet} to generate figurative mosaics. In addition to {truchet}, we need [{dplyer}](https://dplyr.tidyverse.org/index.htm), [{ggplot2}](https://ggplot2.tidyverse.org/), and [{imager}](https://dahtah.github.io/imager/imager.html), [{purrr}](https://purrr.tidyverse.org/), and [{sf}](https://r-spatial.github.io/sf/):
+This article shows how to use {truchet} to generate figurative mosaics. In addition to {truchet}, we need [{dplyr}](https://dplyr.tidyverse.org/index.htm), [{ggplot2}](https://ggplot2.tidyverse.org/), and [{imager}](https://dahtah.github.io/imager/imager.html), [{purrr}](https://purrr.tidyverse.org/), and [{sf}](https://r-spatial.github.io/sf/):
 
 ```{r setup}
 library(dplyr)
