@@ -1,0 +1,280 @@
+---
+title: "Figurative Portrait with Truchet Tiles"
+output: html_notebook
+---
+
+Load packages:
+```{r load-packages, warning=FALSE}
+library(ggplot2)
+library(imager)
+library(dplyr)
+library(lwgeom)
+library(MexBrewer)
+library(purrr)
+library(sf)
+library(truchet)
+```
+
+
+## Create a figurative mosaic
+
+Read the image using `imager::load.image()`:
+```{r}
+jn <- load.image("jay-en.jpg")
+```
+
+Image info:
+```{r}
+jn
+```
+
+This is the image:
+```{r}
+plot(jn)
+```
+
+Resize image:
+```{r}
+jn_rs <- imresize(jn, scale = 8/10, interpolation = 6)
+```
+
+Convert to data frame:
+```{r}
+df <- jn_rs %>%
+  grayscale() %>% 
+  as.data.frame() %>%
+  mutate(y = -(y - max(y)))
+```
+
+Also convert image to a data frame but retrieve the colors:
+```{r}
+color_df <- jn_rs %>%
+  as.data.frame(wide="c") %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         hex_color = rgb(c.1,
+                         c.2,
+                         c.3))
+```
+
+Create data frame for the mosaic:
+```{r}
+# This will use a smaller subset of points to create the mosaic, which will then be rescaled
+s <- 10
+
+xlim <- c(min(df$x)/s - 4, max(df$x)/s + 4)
+ylim <- c(min(df$y)/s - 4, max(df$y)/s + 4)
+
+# Create a data frame with the spots for tiles
+m_1 <- expand.grid(x = seq(xlim[1], xlim[2], 1),
+                   y = seq(ylim[1], ylim[2], 1)) %>%
+  mutate(tiles = sample(c("dl", "dr"), n(), replace = TRUE),
+         scale_p = 1)
+```
+
+Create mosaic using the designed container:
+```{r}
+m_1 <- st_truchet_ms(df = m_1) %>% 
+  st_truchet_dissolve()
+```
+
+Dissolve and buffer:
+```{r}
+m_2 <- m_1 %>% 
+  st_buffer(dist = -0.1) %>%
+  mutate(color = color + 2)
+
+m_2 <- m_2[!st_is_empty(m_2), , drop = FALSE]
+
+m_3 <- m_2 %>% 
+  st_truchet_dissolve() %>% 
+  st_buffer(dist = -0.1) %>%
+  mutate(color = color + 2)
+
+m_3 <- m_3[!st_is_empty(m_3), , drop = FALSE]
+```
+
+```{r}
+m_1_lines <- m_1 %>% 
+  st_cast(to = "MULTILINESTRING")
+m_2_lines <- m_2 %>% 
+  st_cast(to = "MULTILINESTRING")
+m_3_lines <- m_3 %>% 
+  st_cast(to = "MULTILINESTRING")
+```
+
+Now this needs to be scaled to the size of the image. First get the union of the geometries:
+```{r}
+m_1_union <- st_union(m_1)
+m_2_union <- st_union(m_2)
+m_2_union <- st_union(m_3)
+```
+
+Then scale and recenter:
+```{r}
+m_1_union <- (m_1_lines * s) %>%
+  st_sf()
+m_2_union <- (m_2_lines * s) %>% 
+  st_sf()
+m_3_union <- (m_3_lines * s) %>% 
+  st_sf()
+```
+
+Put it all together:
+```{r}
+mosaic <- rbind(m_1_union %>% 
+                  mutate(m = "1"),
+                m_2_union %>% 
+                  mutate(m = "2"),
+                m_3_union %>% 
+                  mutate(m = "3"))
+```
+
+Create a blade:
+```{r}
+bbox <- st_bbox(mosaic) %>% 
+  round()
+
+blade <- data.frame(x_start = c(bbox$xmin:bbox$xmax, 
+                                rep(bbox$ymin, 
+                                    length(bbox$ymin:bbox$ymax))),
+                    x_end = c(bbox$xmin:bbox$xmax, 
+                              rep(bbox$xmax, 
+                                  length(bbox$ymin:bbox$ymax))),
+                    y_start = c(rep(bbox$ymin, 
+                                    length(bbox$xmin:bbox$xmax)),
+                                bbox$ymin:bbox$ymax),
+                    y_end = c(rep(bbox$ymax,
+                                  length(bbox$xmin:bbox$xmax)),
+                              bbox$ymin:bbox$ymax))
+
+# Shift the blade a small amount to avoid perfect overlap with underlying grid
+blade <- blade %>%
+  mutate(across(everything(), 
+                ~ .x + 0.28))
+
+blade <- pmap(blade, function(x_start, x_end, y_start, y_end){
+  st_linestring(
+    matrix(
+      c(
+        x_start,
+        y_start,
+        x_end,
+        y_end),
+      ncol = 2,byrow = TRUE)
+  )
+}) %>%
+  st_as_sfc()
+```
+
+Use the blade to split the lines (this is one of the computational bottlenecks - this takes time):
+```{r}
+mosaic_lines <- mosaic %>%
+  st_split(blade)
+```
+
+Extract the geometries:
+```{r}
+mosaic_lines <- mosaic_lines %>%
+  st_collection_extract(type = "LINESTRING") %>%
+  st_cast(to = "LINESTRING") %>%
+  mutate(id = 1:n())
+```
+
+Convert the data frames with the image to simple features. This way we can use functions from the {sf} package to find the nearest feature to borrow the original colors in the image:
+```{r}
+df_sf <- df %>%
+  st_as_sf(coords = c("x", "y"))
+
+color_df_sf <- color_df %>%
+  st_as_sf(coords = c("x", "y"))
+```
+
+Find the nearest feature and borrow tones of gray and hexadecimal colors:
+```{r}
+value <- df_sf[mosaic_lines %>% 
+                 st_nearest_feature(df_sf),] %>%
+  pull(value)
+
+hex_color <- color_df_sf[mosaic_lines %>% 
+                           st_nearest_feature(color_df_sf),] %>%
+  pull(hex_color)
+```
+
+We can now add the greyscale values and hexadecimal colors to the data frame with the mosaic:
+```{r}
+mosaic_lines$value <- value
+mosaic_lines$hex_color <- hex_color
+```
+
+Plot mosaic in monotone (rendering in monotone is quick):
+```{r eval=FALSE}
+ggplot() +
+  geom_sf(data = mosaic_lines %>%
+            st_crop(df_sf),
+          aes(color = value,
+              size = exp(-2 * value))) +
+  scale_size(range = c(0.01, 0.80)) + 
+  coord_sf(expand = FALSE) + 
+  theme_void() +
+  theme(legend.position = "none",
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "in"),
+        panel.background = element_rect(color = NA,
+                                        fill = "white"),
+        plot.background = element_rect(color = NA,
+                                       fill = "white"))
+
+ggsave("truchet-jay-en-mono.png",
+       height = 6.5,
+       width = 5,
+       units = "in")
+```
+
+With color (warning - rendering is _lengthy_):
+```{r eval=FALSE}
+ggplot() +
+  geom_sf(data = mosaic_lines %>%
+            st_crop(df_sf) %>%
+            filter(m != "2"),
+          aes(color = hex_color,
+              size = exp(-2 * value))) +
+  scale_color_identity() +
+  scale_size(range = c(0.01, 0.80)) + 
+  coord_sf(expand = FALSE) + 
+  theme_void() + 
+  theme(legend.position = "none",
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "in"),
+        panel.background = element_rect(color = NA,
+                                        fill = "white"),
+        plot.background = element_rect(color = NA,
+                                       fill = "white"))
+
+ggsave("truchet-jay-en.png",
+       height = 6.5,
+       width = 5,
+       units = "in")
+```
+
+Plot mosaic with all three layers of buffers (warning - rendering is _lengthy_):
+```{r eval=FALSE}
+ggplot() +
+  geom_sf(data = mosaic_lines %>%
+            st_crop(df_sf),
+          aes(color = hex_color,
+              size = exp(-2 * value))) +
+  scale_color_identity() +
+  scale_size(range = c(0.01, 0.80)) + 
+  coord_sf(expand = FALSE) + 
+  theme_void() + 
+  theme(legend.position = "none",
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "in"),
+        panel.background = element_rect(color = NA,
+                                        fill = "white"),
+        plot.background = element_rect(color = NA,
+                                       fill = "white"))
+
+ggsave("truchet-jay-en-3.png",
+       height = 6.5,
+       width = 5,
+       units = "in")
+```
