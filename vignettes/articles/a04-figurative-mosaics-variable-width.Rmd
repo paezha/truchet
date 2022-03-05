@@ -2,15 +2,11 @@
 title: "Figurative mosaics with variable-width lines"
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-```
-
-```{r setup}
-library(truchet)
 ```
 
 An earlier [article](https://paezha.github.io/truchet/articles/a03-figurative-mosaics.html) in this series shows how to use flexible Truchet tiles to create figurative mosaics. Another way to create figurative mosaics is to vary the width of the lines. This article illustrate this procedure. 
@@ -23,46 +19,44 @@ The keys to this procedure are to:
 
 Here, the word "relatively" is doing some heavy-lifting, and some experimentation will typically be required to find combinations of density of lines and resolution of the image that work well for a given mosaic. 
 
-The package needed (addition to {truchet}), are [{dplyr}](https://dplyr.tidyverse.org/index.htm), [{ggplot2}](https://ggplot2.tidyverse.org/), and [{imager}](https://dahtah.github.io/imager/imager.html), [{purrr}](https://purrr.tidyverse.org/), and [{sf}](https://r-spatial.github.io/sf/):
+The packages needed (addition to {truchet}), are [{dplyr}](https://dplyr.tidyverse.org/index.htm), [{ggplot2}](https://ggplot2.tidyverse.org/), [{imager}](https://dahtah.github.io/imager/imager.html), [lwgeom](https://r-spatial.github.io/lwgeom/), [{purrr}](https://purrr.tidyverse.org/), and [{sf}](https://r-spatial.github.io/sf/):
 
-```{r}
-#library(bezier)
+```{r load-packages, message=FALSE}
 library(dplyr)
 library(ggplot2)
 library(imager)
 library(lwgeom)
-#library(MexBrewer) 
 library(purrr)
 library(sf)
 library(truchet)
 ```
 
 Read the image for this example. Use `imager::load.image()`:
-```{r}
+```{r read-image}
 marilyn <- load.image(system.file("extdata", 
                                   "marilyn.jpg", 
                                   package = "truchet"))
 ```
 
 The size of the image is 800-by-1200 pixels, and it is already in greyscale:
-```{r}
+```{r inspect-image}
 marilyn
 ```
 
 This is the image:
-```{r}
+```{r plot-image}
 plot(marilyn)
 ```
 
 The resolution is too high, which in addition to increasing the computational demands kind of defeats the purpose of a figurative mosaic. Experimenting with various image sizes I have found that working in the neighborhood of 60,000 pixels gives pleasing results in reasonably short times. This represents a square image of approximately 245 pixels by side. Resizing does not necessarily give an image of the desired size here because it depends on the interpolation algorith. Presently, scaling by a factor of $1/4$ gives good results:
-```{r}
+```{r resize-image}
 marilyn_rs <- imager::imresize(marilyn, 
                                scale = 1/4, 
                                interpolation = 6)
 ```
 
 The image needs to be converted to a data frame and the y axis needs to be reversed:
-```{r}
+```{r convert-to-grayscale-data-frame}
 marilyn_df <- marilyn_rs %>%
   as.data.frame() %>%
   mutate(y = -(y - max(y)))
@@ -71,7 +65,7 @@ marilyn_df <- marilyn_rs %>%
 Notice that now the size of the image is `r nrow(marilyn_df)`.
 
 This is the plot of the rescaled image (using {ggplot}):
-```{r}
+```{r plot-image-data-frame}
 ggplot() +
   geom_point(data = marilyn_df,
              aes(x = x,
@@ -81,7 +75,7 @@ ggplot() +
 ```
 
 Next, we need to create a data frame for placing the tiles for the mosaic. This presents a challenge: 60,000 tiles is too many - but at the same time, fewer pixels degrade the image. To resolve this, we can use a smaller mosaic that then is scaled up to the size of the desired image. A parameter `s` here indicates the spacing of the tiles in the target image. For example, $s = 15$ here means that there will be one tile every fifteen pixels in the target image. Other parameters used in this chunk include: 1) expanding the coordinates of the scaled-down mosaic by 4 pixels in each direction, to give a buffer around the target image; 2) defining the scale of the tiles, which is set to 1 here (meaning each individual tile is of size 1-by-1). The tiles used are of type "dl" and "dr".
-```{r}
+```{r design-mosaic}
 # This will use a smaller subset of points to create the mosaic, which will then be rescaled
 s <- 15
 
@@ -96,12 +90,12 @@ m_1 <- expand.grid(x = seq(xlim[1], xlim[2], 1),
 ```
 
 Function `st_truchet_ms()` is used to assemble the mosaic according to the specifications coded in data frame `m_1`:
-```{r}
+```{r assemble-mosaic}
 m_1 <- st_truchet_ms(df = m_1)
 ```
 
 This is the mosaic:
-```{r}
+```{r plot-mosaic}
 ggplot() +
   geom_sf(data = m_1 %>% st_truchet_dissolve(),
           aes(fill = color),
@@ -109,7 +103,7 @@ ggplot() +
 ```
 
 Notice the difference in the scale of the mosaic to the target image. Despite the relatively dense aspect, the density of lines of this mosaic is not very high when scaled up to the size of the target image. To increase the number of lines, the mosaic is first dissolved (i.e., the boundaries of the individual mosaics are deleted to create compact polygons of the same color), and then buffered. This is done twice (which I find gives good results). After buffering, some geometries may become empty and need to be removed:
-```{r}
+```{r dissolve-and-buffer}
 m_2 <- m_1 %>% 
   # Dissolve boundaries
   st_truchet_dissolve() %>% 
@@ -120,17 +114,6 @@ m_2 <- m_1 %>%
 
 # Remove empty geometries
 m_2 <- m_2[!st_is_empty(m_2), , drop = FALSE]
-
-# m_3 <- m_2 %>% 
-#   # Dissolve boundaries
-#   st_truchet_dissolve() %>% 
-#   # Buffer the polygons
-#   st_buffer(dist = -0.1) %>%
-#   # Adjust the color field to distinguish it from the original polygons
-#   mutate(color = color + 2)
-# 
-# # Remove empty geometries
-# m_3 <- m_3[!st_is_empty(m_3), , drop = FALSE]
 ```
 
 The mosaics at the moment are composed of polygons. In this following chunk they are cast to "MULTILINESTRING" type (the original mosaic after dissolving the boundaries):
@@ -141,13 +124,10 @@ m_1_lines <- m_1 %>%
 
 m_2_lines <- m_2 %>% 
   st_cast(to = "MULTILINESTRING")
-
-#m_3_lines <- m_3 %>% 
-#  st_cast(to = "MULTILINESTRING")
 ```
 
 This is now the mosaic composed of lines instead of polygons:
-```{r}
+```{r mosaic-with-buffers}
 ggplot() +
   geom_sf(data = m_1_lines,
           color = "red") +
@@ -156,13 +136,13 @@ ggplot() +
 ```
 
 The mosaic, which is still a scaled down version of the target image, needs to be scaled up. To do this, we first get the union of the geometries so that they are scaled uniformly:
-```{r}
+```{r union-of-geometries}
 m_1_union <- st_union(m_1)
 m_2_union <- st_union(m_2)
 ```
 
 Recall that to make the mosaic we used only one pixel of every fifteen in the target image. We scale by an identical factor (and convert the result to simple features):
-```{r}
+```{r scale-mosaic}
 m_1_union <- (m_1_lines * s) %>%
   st_sf()
 
@@ -171,7 +151,7 @@ m_2_union <- (m_2_lines * s) %>%
 ```
 
 The mosaic is now in the same scale as the image, and the tiles instead of being 1-by-1 are now 15-by-15:
-```{r}
+```{r plot-scaled-mosaic}
 ggplot() +
   geom_sf(data = m_1_union,
           color = "red") +
@@ -180,7 +160,7 @@ ggplot() +
 ```
 
 We now bind the two sets of lines into the scaled up mosaic:
-```{r}
+```{r bind-parts-of-mosaic}
 mosaic <- rbind(m_1_union,
                 m_2_union)
 ```
@@ -188,7 +168,7 @@ mosaic <- rbind(m_1_union,
 The next step is to create a blade to slice the lines. We want to slice the lines into small segments, but there is a trade-off between their size (smaller segments give better defined mosaics) and the time it takes to complete the operation (slicing into smaller segments takes longer). 
 
 In any case, it does not make sense to slice the lines into segments smaller than the size of the pixels of the target image, because this would result in longer computer times with no gain in definition (as segments smaller than a pixel would get the same information when contained by the same pixel). Thus, we create a blade with a resolution of exactly one pixel (which is why rescaling the image is important, since besides assembling the mosaic slicing it is the second computational bottleneck in this procedure):
-```{r}
+```{r create-blade}
 # Use the bounding box of the mosaic to define the extents of the grid that becomes the blade
 bbox <- st_bbox(mosaic) %>% 
   round()
@@ -226,13 +206,13 @@ blade <- purrr::pmap(blade,
 ```
 
 We are now ready to use the blade to split the lines (warning: this will take several minutes, depending how fine the blade is):
-```{r}
+```{r split-mosaic}
 mosaic_lines <- mosaic %>%
   st_split(blade)
 ```
 
 Extract the geometries of the sliced lines:
-```{r}
+```{r extract-geometries}
 mosaic_lines <- mosaic_lines %>%
   st_collection_extract(type = "LINESTRING") %>%
   st_cast(to = "LINESTRING") %>%
@@ -240,27 +220,27 @@ mosaic_lines <- mosaic_lines %>%
 ```
 
 Convert the data frame with the image to simple features. This way we can use functions from the {sf} package to find the nearest feature to borrow the greyscale values:
-```{r}
+```{r convert-image-to-simple-features}
 marilyn_sf <- marilyn_df %>%
   st_as_sf(coords = c("x", "y"))
 ```
 
 Find the nearest feature to each line segment and borrow the greyscale value:
-```{r}
+```{r borrow-values-from-image}
 value <- marilyn_sf[mosaic_lines %>% 
                       st_nearest_feature(marilyn_sf),] %>%
   pull(value)
 ```
 
 We can now add the greyscale value to the data frame with the mosaic:
-```{r}
+```{r add-values-to-mosaic}
 mosaic_lines$value <- value
 ```
 
 We are now ready to plot the mosaic. 
 
 A tricky aspect when rendering the image is how to achieve a good definition of the underlying image by changing the size of the lines. This may require manipulating the grayscale values. For example, in this plot the size is proportional to the value and the range of sizes of the lines varies between [0.01, 1]:
-```{r}
+```{r render-figurative-mosaic}
 ggplot() +
   geom_sf(data = mosaic_lines %>%
             st_set_agr("constant") %>%
@@ -275,7 +255,7 @@ ggplot() +
 ```
 
 As an alternative to reversing the valence of values, we can exaggerate the differences in values with a negative exponential function, as in this example:
-```{r}
+```{r render-figurative-mosaic-2}
 ggplot() +
   geom_sf(data = mosaic_lines %>%
             st_set_agr("constant") %>%
@@ -289,7 +269,7 @@ ggplot() +
 ```
 
 An additional modification is to make the color of the lines a function of the greyscale value:
-```{r}
+```{r render-figurative-mosaic-monotone}
 ggplot() +
   geom_sf(data = mosaic_lines %>%
             st_set_agr("constant") %>%
@@ -305,7 +285,7 @@ ggplot() +
 ```
 
 Adding color to the background can help to emphasize the lines:
-```{r}
+```{r render-figurative-mosaic-monotone-with-background}
 ggplot() +
   geom_sf(data = mosaic_lines %>%
             st_set_agr("constant") %>%

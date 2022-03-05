@@ -24,10 +24,12 @@ Imports:
     tidyr
 Suggests: 
     rmarkdown,
+    gganimate,
     ggplot2,
     knitr,
     imager
 VignetteBuilder: 
+    gganimate,
     ggplot2,
     knitr,
     imager

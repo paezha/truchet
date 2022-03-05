@@ -1,8 +1,8 @@
 ---
-title: "Figurative Mosaics with Flexible Tiles"
+title: "Figurative mosaics with flexible tiles"
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -13,7 +13,7 @@ Flexible Truchet tiles are a fantastic tool for creating figurative mosaics. The
 
 This article shows how to use {truchet} to generate figurative mosaics. In addition to {truchet}, we need [{dplyr}](https://dplyr.tidyverse.org/index.htm), [{ggplot2}](https://ggplot2.tidyverse.org/), and [{imager}](https://dahtah.github.io/imager/imager.html), [{purrr}](https://purrr.tidyverse.org/), and [{sf}](https://r-spatial.github.io/sf/):
 
-```{r setup}
+```{r load-packages}
 library(dplyr)
 library(ggplot2)
 library(imager)
@@ -25,7 +25,7 @@ library(truchet)
 The basic idea is as follows.
 
 A mosaic can be made of a collection of tiles, possibly in regular arrangements. Take the four elemental Truchet tiles, so-called tiles A, B, C, and D:
-```{r}
+```{r elemental-tiles}
 # Tiles types
 tile_types <- data.frame(type = c("Al", "Bl", "Cl", "Dl")) %>%
   mutate(x = c(1, 2.5, 1, 2.5),
@@ -54,7 +54,7 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
 ```
 
 A simple arrangement of a 1 by 1 matrix is just one tile repeated in the mosaic, for example "A". This is what Truchet denominated "Design A":
-```{r}
+```{r design-A}
 # Tiles types
 tile_types <- data.frame(type = c("Al", "Al", "Al", "Al")) %>%
   mutate(x = c(1, 2, 1, 2),
@@ -90,7 +90,7 @@ C & A
 \end{bmatrix}
 $$
 This is Truchet's Design C:
-```{r}
+```{r design-C}
 # Tiles types
 tile_types <- data.frame(type = c("Al", "Cl", "Cl", "Al")) %>%
   mutate(x = c(1, 2, 1, 2),
@@ -119,7 +119,7 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
 ```
 
 Judicious use of the parameter to control the fold of the boundary of each tile changes the "darkness" of the tile. For example, this is Design C with a lighter color (b = 1/3):
-```{r}
+```{r design-C-lighter}
 # Tiles types
 tile_types <- data.frame(type = c("Al", "Cl", "Cl", "Al")) %>%
   mutate(x = c(1, 2, 1, 2),
@@ -148,7 +148,7 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
 ```
 
 This is Design C with a darker color (b = 2/3):
-```{r}
+```{r design-C-darker}
 # Tiles types
 tile_types <- data.frame(type = c("Al", "Cl", "Cl", "Al")) %>%
   mutate(x = c(1, 2, 1, 2),
@@ -179,46 +179,46 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
 Notice that the parameter alternates between `b` and `1 - b` to ensure that the four tiles in this $2\times 2$ matrix look uniformly darker. Since `b` takes values between 0 and 1 (it represents a proportion of the length of the diagonal of the tile), an underlying variable can be used to modify the "darkness" of the tiles locally. In this way, an image in grayscale can give those values, as illustrated next.
 
 This example uses an image of Elvis in the jail. Read the image using `imager::load.image()`:
-```{r}
+```{r read-elvis}
 elvis <- load.image(system.file("extdata", 
                                 "elvis.jpg", 
                                 package = "truchet"))
 ```
 
 The size of the image is $1031 \times 1280$ and has three colour channels.
-```{r}
+```{r inspect-elvis}
 elvis
 ```
 
 This is Elvis doing the [jailhouse rock](https://www.youtube.com/watch?v=gj0Rz-uP4Mk):
-```{r}
+```{r plot-elvis}
 plot(elvis)
 ```
 
 The size of the image means that there are `r 1031 * 1280` pixels. Creating an image with all these pixels is very lengthy, and not very interesting because the high resolution means that the figurative aspect of the mosaic is lost. Instead of working with the original image, here we resize it so that it is 1/5 of its original size:
-```{r}
+```{r rescale-elvis}
 elvis_rs <- imresize(elvis, scale = 1/15, interpolation = 6)
 ```
 
 Now the size of the image is $61\times 76$ and consists of only `r 61 * 76` pixels. Clearly, the resolution is much lower and a lot of detail is lost, but that is part of the point of doing a figurative mosaic:
-```{r}
+```{r plot-rescaled-elvis}
 plot(elvis_rs)
 ```
 
 To use this image we need to change its color map to grayscale and also to transform from class `cimg`/`imager_array` to data frame:
-```{r}
+```{r convert-elvis-to-grayscale-data-frame}
 elvis_df <- elvis_rs %>%
   grayscale() %>% 
   as.data.frame()
 ```
 
 This data frame now includes the coordinates of the pixels (but note that the y axis is reversed due to the convention to index pixels in an image). In addition, the column `value` gives the shades of gray, with 0 = white and 1 = black:
-```{r}
+```{r summary-of-elvis}
 summary(elvis_df)
 ```
 
 Now we can use this data frame to design the mosaic. Here we use Design C. The modulus operation is used to create a checkerboard pattern of tiles A and C that replicates the matrix $[A, C; C, A]$, and also to adjust parameter `b` when creating the tiles:
-```{r}
+```{r use-elvis-to-design-mosaic}
 df <- elvis_df %>% 
   # Reverse the y axis
   mutate(y = -(y - max(y)),
@@ -230,7 +230,7 @@ df <- elvis_df %>%
 ```
 
 Function `st_truchet_fm()` is used to create a mosaic of flexible tiles. Column `b` is scaled to avoid completely white or completely black tiles:
-```{r}
+```{r assemble-elvis-mosaic}
 # Start a timer
 start_time <- Sys.time()
 
@@ -248,7 +248,7 @@ end_time - start_time
 It takes about 43 seconds to process an image of 61 by 76 pixels.
 
 Since the mosaic is a simple features data frame it can be plotted using `geom_sf()` in {ggplot2}:
-```{r}
+```{r plot-elvis-mosaic}
 mosaic %>%
   ggplot() + 
   geom_sf(aes(fill = color),
@@ -268,7 +268,7 @@ C & D
 $$
 
 This is a windmill-like set of 4 tiles:
-```{r}
+```{r design-D}
 # Tiles types
 tile_types <- data.frame(type = c("Bl", "Al", "Cl", "Dl")) %>%
   mutate(x = c(1, 2, 1, 2),
@@ -297,36 +297,36 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
 ```
 
 To illustrate this design, we will use the iconic image of [Frida Kahlo](https://en.wikipedia.org/wiki/Frida_Kahlo):
-```{r}
+```{r load-frida}
 frida <- load.image(system.file("extdata", 
                                 "frida.jpg", 
                                 package = "truchet"))
 ```
 
 This is the source image:
-```{r}
+```{r plot-frida}
 plot(frida)
 ```
 
 We can select part of the image, for instance to zoom in on the face:
-```{r}
+```{r select-frida}
 frida_sel <- imsub(frida,x %inr% c(109,500))
 ```
 
 The resolution may still be high for the mosaic, so we resize image:
-```{r}
+```{r resize-frida}
 frida_rs <- imresize(frida_sel, scale = 1/5, interpolation = 6)
 ```
 
 As before, we convert to grayscale and then to data frame:
-```{r}
+```{r convert-frida-to-grayscale-data-frame}
 frida_df <- frida_rs %>%
   grayscale() %>% 
   as.data.frame()
 ```
 
 Creating this design is a little bit trickier. Notice the use of `dplyr::case_when()` and the modulus operation to place the tiles:
-```{r}
+```{r use-frida-to-design-mosaic}
 df <- frida_df %>% 
   # Reverse the y axis
   mutate(y = -(y - max(y)),
@@ -342,7 +342,7 @@ df <- frida_df %>%
 ```
 
 Create mosaic:
-```{r}
+```{r assemble-frida-mosaic}
 # Start a timer
 start_time <- Sys.time()
 
@@ -357,7 +357,7 @@ end_time - start_time
 ```
 
 It takes about 52 seconds to process this mosaic with `r nrow(frida_df)` tiles. This is the resulting mosaic:
-```{r}
+```{r plot-frida-mosaic}
 mosaic %>%
   ggplot() + 
   geom_sf(aes(fill = color),
@@ -369,7 +369,7 @@ mosaic %>%
 ```
 
 It is possible to randomize the tile allocation. A fascinating aspect of Truchet tiles is how the "texture" of the mosaic changes with each variation in the placement of tiles. For example:
-```{r}
+```{r rrandom-frida-tiels}
 # Set seed
 seed <- 1085
 set.seed(seed)
@@ -409,31 +409,31 @@ mosaic %>%
 A nice feature of working with tiles as spatial data is that we can perform geometric operations, such as `st_nearest_feature()` from the {sf} package. The next example illustrate how to "borrow" the colors of the underlying image.
 
 Load the source image:
-```{r}
+```{r load-flower}
 flower <- load.image(system.file("extdata", 
                                  "flower.jpg", 
                                  package = "truchet"))
 ```
 
 The image is quite colorful:
-```{r}
+```{r plot-flower}
 plot(flower)
 ```
 
 Resize image:
-```{r}
+```{r resize-flower}
 flower_rs <- imresize(flower, scale = 1/15, interpolation = 6)
 ```
 
 As before, we convert to grayscale and then to data frame:
-```{r}
+```{r convert-flower-to-grayscale-data-frame}
 flower_df <- flower_rs %>%
   grayscale() %>% 
   as.data.frame()
 ```
 
 This time, though, we also convert image to a data frame but retrieve the colors:
-```{r}
+```{r convert-flower-to-color-data-frame}
 flower_color_df <- flower_rs %>%
   as.data.frame(wide="c") %>% 
   # Reverse the y axis
@@ -444,7 +444,7 @@ flower_color_df <- flower_rs %>%
 ```
 
 Use Design C for the mosaic:
-```{r}
+```{r use-flower-to-design-mosaic}
 df <- flower_df %>% 
   # Reverse the y axis
   mutate(y = -(y - max(y)),
@@ -459,7 +459,7 @@ mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.80 + 0.001))
 ```
 
 This is the duotone mosaic:
-```{r}
+```{r duotone-flower-mosaic}
 mosaic %>%
   ggplot() + 
   geom_sf(aes(fill = color),
@@ -471,25 +471,25 @@ mosaic %>%
 ```
 
 Convert the color data frame to simple features. This way we can use functions from the {sf} package to find the nearest feature to borrow the original colors in the image:
-```{r}
+```{r convert-flower-to-simple-features}
 flower_color_sf <- flower_color_df %>%
   st_as_sf(coords = c("x", "y"))
 ```
 
 Find the nearest feature and borrow color:
-```{r}
+```{r borrow-colors}
 hex_color <- flower_color_sf[mosaic %>% 
                                st_nearest_feature(flower_color_sf),] %>%
   pull(hex_color)
 ```
 
 We can now add the hexadecimal colors to the data frame with the mosaic:
-```{r}
+```{r add-colors-to-mosaic}
 mosaic$hex_color <- hex_color
 ```
 
 To plot the mosaic we use the duotone colors to filter part of the tiles. For example, here we filter duotone color 2 and use the hexadecimal colors to fill the polygons:
-```{r}
+```{r plot-color-flower-1}
 mosaic %>%
   filter(color == 2) %>%
   ggplot() + 
@@ -502,7 +502,7 @@ mosaic %>%
 ```
 
 In this one, we filter the tiles with duotone color 1:
-```{r}
+```{r plot-color-flower-2}
 mosaic %>%
   filter(color == 1) %>%
   ggplot() + 
@@ -515,7 +515,7 @@ mosaic %>%
 ```
 
 Playing with the background of the image can also lead to interesting results:
-```{r}
+```{r plot-color-flower-3}
 mosaic %>%
   filter(color == 2) %>%
   ggplot() + 
