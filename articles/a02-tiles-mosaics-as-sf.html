@@ -48,10 +48,11 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/a01-designing-mosaics.html">Designing Mosaics</a>
+    <a class="dropdown-item" href="../articles/a01-designing-mosaics.html">Designing mosaics</a>
     <a class="dropdown-item" href="../articles/a02-tiles-mosaics-as-sf.html">Working with tiles and mosaics as `sf` objects</a>
-    <a class="dropdown-item" href="../articles/a03-figurative-mosaics.html">Figurative Mosaics with Flexible Tiles</a>
+    <a class="dropdown-item" href="../articles/a03-figurative-mosaics.html">Figurative mosaics with flexible tiles</a>
     <a class="dropdown-item" href="../articles/a04-figurative-mosaics-variable-width.html">Figurative mosaics with variable-width lines</a>
+    <a class="dropdown-item" href="../articles/a06-animated-mosaics.html">Animating mosaics</a>
   </div>
 </li>
       </ul>
@@ -104,31 +105,31 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
           <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">color</span><span class="op">)</span>,
           color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></code></pre></div>
-<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/mosaic-boundaries-1.png" width="700"></p>
 <p>This is not necessarily an issue, since the mosaic can be produced by filling the polygons while not coloring the boundaries:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic</span>,
           <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">color</span><span class="op">)</span>,
           color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/mosaic-uncolored-boundaries-1.png" width="700"></p>
 <p>The boundaries are “invisible”, but they still exist. A utility function <code><a href="../reference/st_truchet_dissolve.html">st_truchet_dissolve()</a></code> can be used to dissolve the boundaries and to create compact elements of the mosaic by color:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mosaic_dissolved</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/st_truchet_dissolve.html">st_truchet_dissolve</a></span><span class="op">(</span>mosaic <span class="op">=</span> <span class="va">mosaic</span><span class="op">)</span></code></pre></div>
-<p>Techincally, the function summarizes the geometry objects by color, and then performs a union to dissolve the boundaries. See:</p>
+<p>Technically, the function summarizes the geometry objects by color, and then performs a union to dissolve the boundaries. See:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic_dissolved</span>,
           color <span class="op">=</span> <span class="st">"black"</span>,
           fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
-<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/plot-dissolved-mosaic-1.png" width="700"></p>
 <p>The effect is the same as filling the polygons, but the boundaries can now be expressed too without the overlaps between the original individual tiles:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic_dissolved</span>,
           <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">color</span><span class="op">)</span>,
           color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></code></pre></div>
-<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/plot-dissolved-mosaic-with-colors-1.png" width="700"></p>
 <p>Since mosaics are <code>sf</code> data frames:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">mosaic_dissolved</span><span class="op">)</span>
@@ -147,7 +148,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">buffered_tiles</span>,
           fill <span class="op">=</span> <span class="st">"red"</span>,
           color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></code></pre></div>
-<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="a02-tiles-mosaics-as-sf_files/figure-html/plot-buffered-mosaic-1.png" width="700"></p>
 <p>Points-in-polygon operations and so on can be used in combination with other techniques, such as circle packing.</p>
   </main>
 </div>

@@ -48,10 +48,11 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/a01-designing-mosaics.html">Designing Mosaics</a>
+    <a class="dropdown-item" href="../articles/a01-designing-mosaics.html">Designing mosaics</a>
     <a class="dropdown-item" href="../articles/a02-tiles-mosaics-as-sf.html">Working with tiles and mosaics as `sf` objects</a>
-    <a class="dropdown-item" href="../articles/a03-figurative-mosaics.html">Figurative Mosaics with Flexible Tiles</a>
+    <a class="dropdown-item" href="../articles/a03-figurative-mosaics.html">Figurative mosaics with flexible tiles</a>
     <a class="dropdown-item" href="../articles/a04-figurative-mosaics-variable-width.html">Figurative mosaics with variable-width lines</a>
+    <a class="dropdown-item" href="../articles/a06-animated-mosaics.html">Animating mosaics</a>
   </div>
 </li>
       </ul>
@@ -86,8 +87,6 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://paezha.github.io/truchet/">truchet</a></span><span class="op">)</span></code></pre></div>
 <p>An earlier <a href="https://paezha.github.io/truchet/articles/a03-figurative-mosaics.html">article</a> in this series shows how to use flexible Truchet tiles to create figurative mosaics. Another way to create figurative mosaics is to vary the width of the lines. This article illustrate this procedure.</p>
 <p>The keys to this procedure are to:</p>
 <ol style="list-style-type: decimal">
@@ -96,82 +95,50 @@
 <li>Use an image with a relatively high resolution, similar to the grid used to slice the lines of the mosaic.</li>
 </ol>
 <p>Here, the word “relatively” is doing some heavy-lifting, and some experimentation will typically be required to find combinations of density of lines and resolution of the image that work well for a given mosaic.</p>
-<p>The package needed (addition to {truchet}), are <a href="https://dplyr.tidyverse.org/index.htm" class="external-link">{dplyr}</a>, <a href="https://ggplot2.tidyverse.org/" class="external-link">{ggplot2}</a>, and <a href="https://dahtah.github.io/imager/imager.html" class="external-link">{imager}</a>, <a href="https://purrr.tidyverse.org/" class="external-link">{purrr}</a>, and <a href="https://r-spatial.github.io/sf/" class="external-link">{sf}</a>:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#library(bezier)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
+<p>The packages needed (addition to {truchet}), are <a href="https://dplyr.tidyverse.org/index.htm" class="external-link">{dplyr}</a>, <a href="https://ggplot2.tidyverse.org/" class="external-link">{ggplot2}</a>, <a href="https://dahtah.github.io/imager/imager.html" class="external-link">{imager}</a>, <a href="https://r-spatial.github.io/lwgeom/" class="external-link">lwgeom</a>, <a href="https://purrr.tidyverse.org/" class="external-link">{purrr}</a>, and <a href="https://r-spatial.github.io/sf/" class="external-link">{sf}</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dahtah.github.io/imager/" class="external-link">imager</a></span><span class="op">)</span>
-<span class="co">#&gt; Loading required package: magrittr</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'imager'</span>
-<span class="co">#&gt; The following object is masked from 'package:magrittr':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     add</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     convolve, spectrum</span>
-<span class="co">#&gt; The following object is masked from 'package:graphics':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     frame</span>
-<span class="co">#&gt; The following object is masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     save.image</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/lwgeom/" class="external-link">lwgeom</a></span><span class="op">)</span>
-<span class="co">#&gt; Linking to liblwgeom 3.0.0beta1 r16016, GEOS 3.8.0, PROJ 6.3.1</span>
-<span class="co">#library(MexBrewer) </span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'purrr'</span>
-<span class="co">#&gt; The following object is masked from 'package:magrittr':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     set_names</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
-<span class="co">#&gt; Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://paezha.github.io/truchet/">truchet</a></span><span class="op">)</span></code></pre></div>
 <p>Read the image for this example. Use <code><a href="https://rdrr.io/pkg/imager/man/load.image.html" class="external-link">imager::load.image()</a></code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">marilyn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/imager/man/load.image.html" class="external-link">load.image</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, 
                                   <span class="st">"marilyn.jpg"</span>, 
                                   package <span class="op">=</span> <span class="st">"truchet"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>The size of the image is 800-by-1200 pixels, and it is already in greyscale:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">marilyn</span>
 <span class="co">#&gt; Image. Width: 800 pix Height: 1200 pix Depth: 1 Colour channels: 1</span></code></pre></div>
 <p>This is the image:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">marilyn</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/plot-image-1.png" width="700"></p>
 <p>The resolution is too high, which in addition to increasing the computational demands kind of defeats the purpose of a figurative mosaic. Experimenting with various image sizes I have found that working in the neighborhood of 60,000 pixels gives pleasing results in reasonably short times. This represents a square image of approximately 245 pixels by side. Resizing does not necessarily give an image of the desired size here because it depends on the interpolation algorith. Presently, scaling by a factor of <span class="math inline">\(1/4\)</span> gives good results:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">marilyn_rs</span> <span class="op">&lt;-</span> <span class="fu">imager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/imager/man/resize_uniform.html" class="external-link">imresize</a></span><span class="op">(</span><span class="va">marilyn</span>, 
                                scale <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, 
                                interpolation <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></code></pre></div>
 <p>The image needs to be converted to a data frame and the y axis needs to be reversed:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">marilyn_df</span> <span class="op">&lt;-</span> <span class="va">marilyn_rs</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>y <span class="op">=</span> <span class="op">-</span><span class="op">(</span><span class="va">y</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Notice that now the size of the image is 60000.</p>
 <p>This is the plot of the rescaled image (using {ggplot}):</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">marilyn_df</span>,
              <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>,
                  y <span class="op">=</span> <span class="va">y</span>,
                  color <span class="op">=</span> <span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_equal</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/plot-image-data-frame-1.png" width="700"></p>
 <p>Next, we need to create a data frame for placing the tiles for the mosaic. This presents a challenge: 60,000 tiles is too many - but at the same time, fewer pixels degrade the image. To resolve this, we can use a smaller mosaic that then is scaled up to the size of the desired image. A parameter <code>s</code> here indicates the spacing of the tiles in the target image. For example, <span class="math inline">\(s = 15\)</span> here means that there will be one tile every fifteen pixels in the target image. Other parameters used in this chunk include: 1) expanding the coordinates of the scaled-down mosaic by 4 pixels in each direction, to give a buffer around the target image; 2) defining the scale of the tiles, which is set to 1 here (meaning each individual tile is of size 1-by-1). The tiles used are of type “dl” and “dr”.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># This will use a smaller subset of points to create the mosaic, which will then be rescaled</span>
 <span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">15</span>
 
@@ -184,17 +151,17 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>tiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dl"</span>, <span class="st">"dr"</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
          scale_p <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p>Function <code><a href="../reference/st_truchet_ms.html">st_truchet_ms()</a></code> is used to assemble the mosaic according to the specifications coded in data frame <code>m_1</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">m_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/st_truchet_ms.html">st_truchet_ms</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">m_1</span><span class="op">)</span></code></pre></div>
 <p>This is the mosaic:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">m_1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/st_truchet_dissolve.html">st_truchet_dissolve</a></span><span class="op">(</span><span class="op">)</span>,
           <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">color</span><span class="op">)</span>,
           color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/plot-mosaic-1.png" width="700"></p>
 <p>Notice the difference in the scale of the mosaic to the target image. Despite the relatively dense aspect, the density of lines of this mosaic is not very high when scaled up to the size of the target image. To increase the number of lines, the mosaic is first dissolved (i.e., the boundaries of the individual mosaics are deleted to create compact polygons of the same color), and then buffered. This is done twice (which I find gives good results). After buffering, some geometries may become empty and need to be removed:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">m_2</span> <span class="op">&lt;-</span> <span class="va">m_1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
   <span class="co"># Dissolve boundaries</span>
   <span class="fu"><a href="../reference/st_truchet_dissolve.html">st_truchet_dissolve</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
@@ -204,63 +171,49 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">color</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="co"># Remove empty geometries</span>
-<span class="va">m_2</span> <span class="op">&lt;-</span> <span class="va">m_2</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_query.html" class="external-link">st_is_empty</a></span><span class="op">(</span><span class="va">m_2</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>
-
-<span class="co"># m_3 &lt;- m_2 %&gt;% </span>
-<span class="co">#   # Dissolve boundaries</span>
-<span class="co">#   st_truchet_dissolve() %&gt;% </span>
-<span class="co">#   # Buffer the polygons</span>
-<span class="co">#   st_buffer(dist = -0.1) %&gt;%</span>
-<span class="co">#   # Adjust the color field to distinguish it from the original polygons</span>
-<span class="co">#   mutate(color = color + 2)</span>
-<span class="co"># </span>
-<span class="co"># # Remove empty geometries</span>
-<span class="co"># m_3 &lt;- m_3[!st_is_empty(m_3), , drop = FALSE]</span></code></pre></div>
+<span class="va">m_2</span> <span class="op">&lt;-</span> <span class="va">m_2</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_query.html" class="external-link">st_is_empty</a></span><span class="op">(</span><span class="va">m_2</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></code></pre></div>
 <p>The mosaics at the moment are composed of polygons. In this following chunk they are cast to “MULTILINESTRING” type (the original mosaic after dissolving the boundaries):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">m_1_lines</span> <span class="op">&lt;-</span> <span class="va">m_1</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
   <span class="fu"><a href="../reference/st_truchet_dissolve.html">st_truchet_dissolve</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"MULTILINESTRING"</span><span class="op">)</span>
 
 <span class="va">m_2_lines</span> <span class="op">&lt;-</span> <span class="va">m_2</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"MULTILINESTRING"</span><span class="op">)</span>
-
-<span class="co">#m_3_lines &lt;- m_3 %&gt;% </span>
-<span class="co">#  st_cast(to = "MULTILINESTRING")</span></code></pre></div>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"MULTILINESTRING"</span><span class="op">)</span></code></pre></div>
 <p>This is now the mosaic composed of lines instead of polygons:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">m_1_lines</span>,
           color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">m_2_lines</span>,
           color <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/mosaic-with-buffers-1.png" width="700"></p>
 <p>The mosaic, which is still a scaled down version of the target image, needs to be scaled up. To do this, we first get the union of the geometries so that they are scaled uniformly:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">m_1_union</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">m_1</span><span class="op">)</span>
 <span class="va">m_2_union</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">m_2</span><span class="op">)</span></code></pre></div>
 <p>Recall that to make the mosaic we used only one pixel of every fifteen in the target image. We scale by an identical factor (and convert the result to simple features):</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">m_1_union</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">m_1_lines</span> <span class="op">*</span> <span class="va">s</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="va">m_2_union</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">m_2_lines</span> <span class="op">*</span> <span class="va">s</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">st_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>The mosaic is now in the same scale as the image, and the tiles instead of being 1-by-1 are now 15-by-15:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">m_1_union</span>,
           color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">m_2_union</span>,
           color <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/plot-scaled-mosaic-1.png" width="700"></p>
 <p>We now bind the two sets of lines into the scaled up mosaic:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mosaic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">m_1_union</span>,
                 <span class="va">m_2_union</span><span class="op">)</span></code></pre></div>
 <p>The next step is to create a blade to slice the lines. We want to slice the lines into small segments, but there is a trade-off between their size (smaller segments give better defined mosaics) and the time it takes to complete the operation (slicing into smaller segments takes longer).</p>
 <p>In any case, it does not make sense to slice the lines into segments smaller than the size of the pixels of the target image, because this would result in longer computer times with no gain in definition (as segments smaller than a pixel would get the same information when contained by the same pixel). Thus, we create a blade with a resolution of exactly one pixel (which is why rescaling the image is important, since besides assembling the mosaic slicing it is the second computational bottleneck in this procedure):</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Use the bounding box of the mosaic to define the extents of the grid that becomes the blade</span>
 <span class="va">bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">mosaic</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
   <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">)</span>
@@ -296,30 +249,30 @@
                                 byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>We are now ready to use the blade to split the lines (warning: this will take several minutes, depending how fine the blade is):</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mosaic_lines</span> <span class="op">&lt;-</span> <span class="va">mosaic</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://rdrr.io/pkg/lwgeom/man/st_split.html" class="external-link">st_split</a></span><span class="op">(</span><span class="va">blade</span><span class="op">)</span></code></pre></div>
 <p>Extract the geometries of the sliced lines:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mosaic_lines</span> <span class="op">&lt;-</span> <span class="va">mosaic_lines</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_collection_extract.html" class="external-link">st_collection_extract</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span>to <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Convert the data frame with the image to simple features. This way we can use functions from the {sf} package to find the nearest feature to borrow the greyscale values:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">marilyn_sf</span> <span class="op">&lt;-</span> <span class="va">marilyn_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Find the nearest feature to each line segment and borrow the greyscale value:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">value</span> <span class="op">&lt;-</span> <span class="va">marilyn_sf</span><span class="op">[</span><span class="va">mosaic_lines</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> 
                       <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">st_nearest_feature</a></span><span class="op">(</span><span class="va">marilyn_sf</span><span class="op">)</span>,<span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span></code></pre></div>
 <p>We can now add the greyscale value to the data frame with the mosaic:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mosaic_lines</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="va">value</span></code></pre></div>
 <p>We are now ready to plot the mosaic.</p>
 <p>A tricky aspect when rendering the image is how to achieve a good definition of the underlying image by changing the size of the lines. This may require manipulating the grayscale values. For example, in this plot the size is proportional to the value and the range of sizes of the lines varies between [0.01, 1]:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic_lines</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
             <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_set_agr</a></span><span class="op">(</span><span class="st">"constant"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -331,9 +284,9 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,
         plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/render-figurative-mosaic-1.png" width="700"></p>
 <p>As an alternative to reversing the valence of values, we can exaggerate the differences in values with a negative exponential function, as in this example:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic_lines</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
             <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_set_agr</a></span><span class="op">(</span><span class="st">"constant"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -344,9 +297,9 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,
         plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-26-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/render-figurative-mosaic-2-1.png" width="700"></p>
 <p>An additional modification is to make the color of the lines a function of the greyscale value:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic_lines</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
             <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_set_agr</a></span><span class="op">(</span><span class="st">"constant"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -359,9 +312,9 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,
         plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="st">"in"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-27-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/render-figurative-mosaic-monotone-1.png" width="700"></p>
 <p>Adding color to the background can help to emphasize the lines:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mosaic_lines</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
             <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_set_agr</a></span><span class="op">(</span><span class="st">"constant"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span>
@@ -375,7 +328,7 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>,
         plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="st">"in"</span><span class="op">)</span>,
         plot.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"azure"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
+<p><img src="a04-figurative-mosaics-variable-width_files/figure-html/render-figurative-mosaic-monotone-with-background-1.png" width="700"></p>
 <p>These are just some examples of the parameters that can be explored when creating figurative mosaics with Truchet tiles with variable-width lines.</p>
   </main>
 </div>
