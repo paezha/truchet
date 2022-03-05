@@ -201,7 +201,7 @@ p <- ggplot() +
 ```
 
 Finally render the animation with desired parameters:
-```{r animate-plot}
+```{r animate-plot, eval = FALSE}
 gganimate::animate(p, 
         rewind = FALSE,
         end_pause = 10,
@@ -213,4 +213,4 @@ gganimate::animate(p,
         units = "in")
 ```
 
-
+![](animated-mosaic-7336.gif)
