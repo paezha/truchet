@@ -182,8 +182,16 @@ p <- ggplot() +
   geom_sf(data = background,
           aes(fill = factor(color)),
           color = NA) +
-  # Render the animated tiles
-  geom_sf(data = mosaic,
+  # Render the animated tiles: first the tiles of color 1
+  geom_sf(data = mosaic %>%
+            filter(color == 1),
+          aes(fill = factor(color),
+              # It is important to group by `state` and `tile` otherwise the animation gets wacky
+              group = interaction(state, tile)),
+          color = NA) +
+  # Render the animated tiles: then the tiles of color 2
+  geom_sf(data = mosaic %>%
+            filter(color == 2),
           aes(fill = factor(color),
               # It is important to group by `state` and `tile` otherwise the animation gets wacky
               group = interaction(state, tile)),
@@ -201,7 +209,21 @@ p <- ggplot() +
 ```
 
 Finally render the animation with desired parameters:
-```{r animate-plot, eval = FALSE}
+```{r animate-plot, include = FALSE}
+gganimate::animate(p, 
+        rewind = FALSE,
+        end_pause = 10,
+        fps = 60,
+        duration = 10,
+        res = 300,
+        height = 1.0, 
+        width = 1.0,
+        units = "in")
+
+anim_save("animated-mosaic-7336.gif")
+```
+
+```
 gganimate::animate(p, 
         rewind = FALSE,
         end_pause = 10,
@@ -214,3 +236,5 @@ gganimate::animate(p,
 ```
 
 ![](animated-mosaic-7336.gif)
+
+
