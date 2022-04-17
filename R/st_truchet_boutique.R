@@ -4,8 +4,8 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
   #'
   #' @param x A number with the x coordinate of the center of the tile
   #' @param y A number with the y coordinate of the center of the tile
-  #' @param type A single character to designate a type of tile; currently supported options are "ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4", "paradise_1", "paradise_2", "paradise_3", "paradise_4"
-  #' @return A list with one or more objects of type \code{sf} representing one or more tiles depending on type
+  #' @param type A single character to designate a type of tile; currently supported options are "ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4", "paradise_1", "paradise_2", "paradise_3", "paradise_4", "silk_1", "silk_2", "silk_3", "silk_4"
+  #' @return A data frame with one or more objects of type \code{sf} representing one or more tiles depending on type
   #' @importFrom rlang .data
   #' @export
   #' @examples
@@ -14,9 +14,12 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
   #' @note For a discussion of variable tiling patterns see: Robert J.Krawczyk (2020) Infinitely Variable Tiling Patterns: From Truchet to Sol LeWitt Revisited, Patterns, 1:5, 1-4, \url{10.1016/j.patter.2020.100084} and
   #' Robert J.Krawczyk (2011) Truchet tilings revisited, Proceedings of ISAMA 2011, 69-77 \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.378.5320&rep=rep1&type=pdf#page=69}
 
+  ## NOTE: after creating new tiles add to documentation and update function `st_truchet_ss()` to recognize them
+
   # Validate inputs
   checkmate::assertChoice(type, c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
-                                  "paradise_1", "paradise_2", "paradise_3", "paradise_4"))
+                                  "paradise_1", "paradise_2", "paradise_3", "paradise_4",
+                                  "silk_1", "silk_2", "silk_3", "silk_4"))
 
   ## CREATE BASE TILE
   #  Define square polygon
@@ -77,11 +80,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              ##sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             ##dplyr::pull(geometry)) %>%
+             ##dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              ##dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -92,11 +95,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              ##sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             ##dplyr::pull(geometry)) %>%
+             ##dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              ##dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for fourth set of buffers
            # Create buffers and cast to lines
@@ -107,11 +110,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              ##sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             ##dplyr::pull(geometry)) %>%
+             ##dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              ##dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Intersect lines with tile
            line_1 <- bfs_1 %>%
@@ -160,11 +163,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for second set of buffers
            # Create buffers and cast to lines
@@ -175,11 +178,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -190,11 +193,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -205,11 +208,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Intersect lines with tile
            line_1 <- bfs_1 %>%
@@ -259,11 +262,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for second set of buffers
            # Create buffers and cast to lines
@@ -274,11 +277,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -289,11 +292,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -304,11 +307,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Intersect lines with tile
            line_1 <- bfs_1 %>%
@@ -358,11 +361,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for second set of buffers
            # Create buffers and cast to lines
@@ -373,11 +376,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -388,11 +391,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Make lines for third set of buffers
            # Create buffers and cast to lines
@@ -403,11 +406,11 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING") %>%
              #dplyr::select(-r)
-           dplyr::select(-.data$r)
+             dplyr::select(-.data$r)
 
            # Intersect lines with tile
            line_1 <- bfs_1 %>%
@@ -498,7 +501,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
            bfs_3 <- bfs_3 %>%
@@ -516,7 +519,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
 
@@ -602,7 +605,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
            bfs_3 <- bfs_3 %>%
@@ -620,7 +623,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
 
@@ -706,7 +709,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
            bfs_3 <- bfs_3 %>%
@@ -724,7 +727,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
 
@@ -810,7 +813,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
            bfs_3 <- bfs_3 %>%
@@ -828,7 +831,7 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                              sf::st_buffer(dist = .data$r) %>%
                              #sf::st_buffer(dist = r) %>%
                              dplyr::pull(.data$geometry)) %>%
-                             #dplyr::pull(geometry)) %>%
+             #dplyr::pull(geometry)) %>%
              sf::st_set_agr("constant")
 
 
@@ -838,6 +841,282 @@ st_truchet_boutique <- function(x = 0, y = 0, type = "ribbons_1"){
                            bfs_2,
                            bfs_3,
                            bfs_4)  %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_cast(to = "LINESTRING")
+
+           # Set geometry to constant
+           sf::st_agr(tile) <- "constant"
+
+           # Intersect lines with tile
+           tile <- line_1 %>%
+             sf::st_intersection(sf::st_geometry(tile))
+           ## ADORNMENTS DONE
+         },
+
+         "silk_1" ={
+           ## ADORNMENTS
+           pts <- data.frame(x = c(0, 0, 1, 1, 1, 1/2),
+                             y = c(0, 1, 1, 1/2, 0, 0))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Make lines for first set of buffers
+           # Circle segments
+           cs <- c(1/3)
+
+           # Create buffers and cast to lines
+           bfs_1 <- pts[c(1, 2, 3, 5),] %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts[c(1, 2, 3, 5),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for second set of buffers
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create buffers
+           bfs_2 <- pts[c(4, 6),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(4, 6),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for third set of buffers
+           # Circle segments
+           cs <- c(1/2)
+
+           # Create buffers
+           bfs_3 <- pts[c(2, 5),] %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts[c(2, 5),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           bfs_3 <- bfs_3 %>%
+             sf::st_difference(sf::st_geometry(bfs_2[1,])) %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_difference(sf::st_geometry(bfs_2[2,]))
+
+           # Bind and cast to lines
+           line_1 <- rbind(bfs_1,
+                           bfs_2,
+                           bfs_3)  %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_cast(to = "LINESTRING")
+
+           # Set geometry to constant
+           sf::st_agr(tile) <- "constant"
+
+           # Intersect lines with tile
+           tile <- line_1 %>%
+             sf::st_intersection(sf::st_geometry(tile))
+           ## ADORNMENTS DONE
+         },
+
+         "silk_2" ={
+           ## ADORNMENTS
+           pts <- data.frame(x = c(0, 0, 0, 1, 1, 1/2),
+                             y = c(0, 1/2, 1, 1, 0, 0))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Make lines for first set of buffers
+           # Circle segments
+           cs <- c(1/3)
+
+           # Create buffers and cast to lines
+           bfs_1 <- pts[c(1, 3, 3, 5),] %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts[c(1, 3, 4, 5),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for second set of buffers
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create buffers
+           bfs_2 <- pts[c(2, 6),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(2, 6),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for third set of buffers
+           # Circle segments
+           cs <- c(1/2)
+
+           # Create buffers
+           bfs_3 <- pts[c(1, 4),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(1, 4),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           bfs_3 <- bfs_3 %>%
+             sf::st_difference(sf::st_geometry(bfs_2[1,])) %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_difference(sf::st_geometry(bfs_2[2,]))
+
+           # Bind and cast to lines
+           line_1 <- rbind(bfs_1,
+                           bfs_2,
+                           bfs_3)  %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_cast(to = "LINESTRING")
+
+           # Set geometry to constant
+           sf::st_agr(tile) <- "constant"
+
+           # Intersect lines with tile
+           tile <- line_1 %>%
+             sf::st_intersection(sf::st_geometry(tile))
+           ## ADORNMENTS DONE
+         },
+
+         "silk_3" ={
+           ## ADORNMENTS
+           pts <- data.frame(x = c(0, 0, 0, 1/2, 1, 1),
+                             y = c(0, 1/2, 1, 1, 1, 0))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Make lines for first set of buffers
+           # Circle segments
+           cs <- c(1/3)
+
+           # Create buffers and cast to lines
+           bfs_1 <- pts[c(1, 3, 5, 6),] %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts[c(1, 3, 5, 6),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for second set of buffers
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create buffers
+           bfs_2 <- pts[c(2, 4),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(2, 4),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for third set of buffers
+           # Circle segments
+           cs <- c(1/2)
+
+           # Create buffers
+           bfs_3 <- pts[c(3, 6),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(3, 6),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           bfs_3 <- bfs_3 %>%
+             sf::st_difference(sf::st_geometry(bfs_2[1,])) %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_difference(sf::st_geometry(bfs_2[2,]))
+
+           # Bind and cast to lines
+           line_1 <- rbind(bfs_1,
+                           bfs_2,
+                           bfs_3)  %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_cast(to = "LINESTRING")
+
+           # Set geometry to constant
+           sf::st_agr(tile) <- "constant"
+
+           # Intersect lines with tile
+           tile <- line_1 %>%
+             sf::st_intersection(sf::st_geometry(tile))
+           ## ADORNMENTS DONE
+         },
+
+         "silk_4" ={
+           ## ADORNMENTS
+           pts <- data.frame(x = c(0, 0, 1/2, 1, 1, 1),
+                             y = c(0, 1, 1, 1, 1/2, 0))
+
+           # Convert coordinates to points and then to simple features
+           pts <- pts %>%
+             sf::st_as_sf(coords = c("x", "y"))
+
+           # Assign constant geometry
+           sf::st_agr(pts) <- "constant"
+
+           # Make lines for first set of buffers
+           # Circle segments
+           cs <- c(1/3)
+
+           # Create buffers and cast to lines
+           bfs_1 <- pts[c(1, 2, 4, 6),] %>%
+             dplyr::mutate(r = cs[1],
+                           geometry = pts[c(1, 2, 4, 6),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for second set of buffers
+           # Circle segments
+           cs <- c(1/6)
+
+           # Create buffers
+           bfs_2 <- pts[c(3, 5),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(3, 5),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           # Make lines for third set of buffers
+           # Circle segments
+           cs <- c(1/2)
+
+           # Create buffers
+           bfs_3 <- pts[c(1, 4),] %>%
+             dplyr::mutate(r = cs,
+                           geometry = pts[c(1, 4),] %>%
+                             sf::st_buffer(dist = .data$r) %>%
+                             dplyr::pull(.data$geometry)) %>%
+             sf::st_set_agr("constant")
+
+           bfs_3 <- bfs_3 %>%
+             sf::st_difference(sf::st_geometry(bfs_2[1,])) %>%
+             sf::st_set_agr("constant") %>%
+             sf::st_difference(sf::st_geometry(bfs_2[2,]))
+
+           # Bind and cast to lines
+           line_1 <- rbind(bfs_1,
+                           bfs_2,
+                           bfs_3)  %>%
              sf::st_set_agr("constant") %>%
              sf::st_cast(to = "LINESTRING")
 

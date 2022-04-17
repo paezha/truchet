@@ -21,7 +21,8 @@ st_truchet_ss <- function(df = NULL, tiles = c("dr", "dl"), xlim = c(1, 3), ylim
   # Declare types of tiles for boutique function
   # Boutique
   boutique <- c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
-                "paradise_1", "paradise_2", "paradise_3", "paradise_4")
+                "paradise_1", "paradise_2", "paradise_3", "paradise_4",
+                "silk_1", "silk_2", "silk_3", "silk_4")
 
   # Linear
   linear <- c("dl", "dr")

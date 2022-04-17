@@ -11,10 +11,10 @@ st_truchet_boutique(x = 0, y = 0, type = "ribbons_1")
 
 \item{y}{A number with the y coordinate of the center of the tile}
 
-\item{type}{A single character to designate a type of tile; currently supported options are "ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4", "paradise_1", "paradise_2", "paradise_3", "paradise_4"}
+\item{type}{A single character to designate a type of tile; currently supported options are "ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4", "paradise_1", "paradise_2", "paradise_3", "paradise_4", "silk_1", "silk_2", "silk_3", "silk_4"}
 }
 \value{
-A list with one or more objects of type \code{sf} representing one or more tiles depending on type
+A data frame with one or more objects of type \code{sf} representing one or more tiles depending on type
 }
 \description{
 Flexible Truchet tiles

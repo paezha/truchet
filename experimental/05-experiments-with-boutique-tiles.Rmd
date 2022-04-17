@@ -73,6 +73,37 @@ ggsave("paradise-tiles.png",
        height = 5)
 ```
 
+Plot sample silk tiles:
+```{r silk-tiles}
+# Tiles types
+tile_types <- data.frame(tiles = c("silk_1", "silk_2", "silk_3", "silk_4")) %>%
+  mutate(x = c(1, 2.5, 1, 2.5),
+         y = c(2.5, 2.5, 1, 1))
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$tiles)
+
+pmap_dfr(list(x_c, y_c, type), st_truchet_boutique) %>%
+  ggplot() + 
+  geom_sf(color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("silk_1", "silk_2", "silk_3", "silk_4")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("silk-tiles.png",
+       width = 5,
+       height = 5)
+```
+
 Mosaic ribbons:
 ```{r mosaic-ribbons}
 x_lim <- c(1, 10)
@@ -117,7 +148,6 @@ ggsave("ribbons-1.png",
        width = 5,
        height = 5)
 ```
-
                      
 Mosaic paradise:
 ```{r mosaic-paradise}
@@ -165,6 +195,51 @@ ggsave("paradise-1.png",
        height = 5)
 ```
 
+Mosaic silk:
+```{r mosaic-silk}
+x_lim <- c(1, 10)
+y_lim <- c(1, 10)
+
+# Polygon
+container <- matrix(c(x_lim[1] - 0.5, y_lim[1] - 0.5,
+                      x_lim[1] - 0.5, y_lim[2] + 0.5,
+                      x_lim[2] + 0.5, y_lim[2] + 0.5,
+                      x_lim[2] + 0.5, y_lim[1] - 0.5,
+                      x_lim[1] - 0.5, y_lim[1] - 0.5),
+                    ncol = 2,
+                    byrow = TRUE)
+
+# Convert coordinates to polygons and then to simple features
+container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                          sf::st_sfc()) %>%
+  sf::st_as_sf()
+
+# Design mosaic
+tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
+                                     y = y_lim[1]:y_lim[2])) %>%
+  mutate(tiles = sample(c("silk_1", "silk_2", "silk_3", "silk_4"),
+                       size = n(),
+                       replace = TRUE))
+
+st_truchet_ss(df = tile_types) %>%
+  st_union() %>%
+  ggplot() + 
+  geom_sf(data = container,
+          color = "#ffd700",
+          fill = "#0057b7",
+          size = 1.5) +
+  geom_sf(color = "#ffd700",
+          size = 0.5) +
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("silk-1.png",
+       width = 5,
+       height = 5)
+```
+
 Mosaic with buffers:
 ```{r}
 x_lim <- c(1, 10)
@@ -188,7 +263,8 @@ container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
 tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
                                      y = y_lim[1]:y_lim[2])) %>%
   mutate(tiles = sample(c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
-                         "paradise_1", "paradise_2", "paradise_3", "paradise_4"),
+                         "paradise_1", "paradise_2", "paradise_3", "paradise_4",
+                                  "silk_1", "silk_2", "silk_3", "silk_4"),
                        size = n(),
                        replace = TRUE))
 
