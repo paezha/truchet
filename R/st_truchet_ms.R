@@ -51,7 +51,6 @@ st_truchet_ms <- function(df = NULL, p1 = 1, p2 = 0, p3 = 0, tiles = c("dr", "dl
                                  y = seq(ylim[1], ylim[2], 1)))
 
     # Adjust container to accommodate tiles at multiple scales:
-
     df_1 <- df %>%
       dplyr::slice_sample(prop = p1)
 
@@ -59,10 +58,10 @@ st_truchet_ms <- function(df = NULL, p1 = 1, p2 = 0, p3 = 0, tiles = c("dr", "dl
       dplyr::anti_join(df_1,
                        by = c("x", "y"))
 
-    df_2 <- df_2 %>%
-      dplyr::slice_sample(prop = ifelse(p2 != 0 | p3 != 0,
-                                        p2/(p2 + p3),
-                                        0))
+    if(p2 != 0 | p3 != 0){
+      df_2 <- df_2 %>%
+        dplyr::slice_sample(prop = p2/(p2 + p3))
+    }
 
     df_3 <- df %>%
       dplyr::anti_join(df_1 %>%

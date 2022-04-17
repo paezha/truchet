@@ -17,6 +17,15 @@ st_truchet_ss <- function(df = NULL, tiles = c("dr", "dl"), xlim = c(1, 3), ylim
   #' @note For a discussion of multi-scale Truchet patterns see \url{https://christophercarlson.com/portfolio/multi-scale-truchet-patterns/}
 
   # Validate inputs
+
+  # Declare types of tiles for boutique function
+  # Boutique
+  boutique <- c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
+                "paradise_1", "paradise_2", "paradise_3", "paradise_4")
+
+  # Linear
+  linear <- c("dl", "dr")
+
   # Assert xlim
   checkmate::assertAtomicVector(xlim,
                                 min.len = 2,
@@ -25,6 +34,11 @@ st_truchet_ss <- function(df = NULL, tiles = c("dr", "dl"), xlim = c(1, 3), ylim
   checkmate::assertAtomicVector(ylim,
                                 min.len = 2,
                                 max.len = 2)
+  # Assert boutique tiles
+  checkmate::assert_subset(tiles,
+                           c(boutique,
+                             linear))
+
 
   # Initialize data frame with coordinates for placing tiles if argument df was not provided
   if(is.null(df)){
@@ -43,9 +57,14 @@ st_truchet_ss <- function(df = NULL, tiles = c("dr", "dl"), xlim = c(1, 3), ylim
   type <- df$tiles
 
   ## NOTE: purrr does not like it when .id is used, complains that geometry column not present: why?
-  mosaic <- purrr::pmap_dfr(list(x_c, y_c, type), st_truchet_l)
-
-
-
-  return(mosaic)
+  if(checkmate::test_subset(type, boutique)){
+    mosaic <- purrr::pmap_dfr(list(x_c, y_c, type), st_truchet_boutique)
+    return(mosaic)
+  }else
+    if(checkmate::test_subset(type, linear)){
+    mosaic <- purrr::pmap_dfr(list(x_c, y_c, type), st_truchet_l)
+    return(mosaic)
+    }else{
+      warning("Mixing boutique and linear tiles not supported: no output produced")
+  }
 }
