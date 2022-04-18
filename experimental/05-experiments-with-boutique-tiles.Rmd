@@ -14,7 +14,7 @@ library(truchet)
 Plot sample ribbon tiles:
 ```{r ribbons-tiles}
 # Tiles types
-tile_types <- data.frame(tiles = c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4")) %>%
+tile_types <- data.frame(tiles = c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4")) %>%
   mutate(x = c(1, 2.5, 1, 2.5),
          y = c(2.5, 2.5, 1, 1))
 
@@ -30,7 +30,7 @@ pmap_dfr(list(x_c, y_c, type), st_truchet_boutique) %>%
   geom_text(data = tile_types,
             aes(x = x,
                 y = y,
-                label = c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4")),
+                label = c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4")),
             nudge_y = 0.6) + 
   scale_fill_distiller(direction = 1) +
   theme_void() +
@@ -104,6 +104,68 @@ ggsave("silk-tiles.png",
        height = 5)
 ```
 
+Plot sample rainbow tiles:
+```{r rainbow-tiles}
+# Tiles types
+tile_types <- data.frame(tiles = c("rainbow_1", "rainbow_2")) %>%
+  mutate(x = c(1, 2.5),
+         y = c(1, 1))
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$tiles)
+
+pmap_dfr(list(x_c, y_c, type), st_truchet_boutique) %>%
+  ggplot() + 
+  geom_sf(color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("rainbow_1", "rainbow_2")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("rainbow-tiles.png",
+       width = 5,
+       height = 5)
+```
+
+Plot sample cloud tiles:
+```{r cloud-tiles}
+# Tiles types
+tile_types <- data.frame(tiles = c("cloud_1", "cloud_2", "cloud_3", "cloud_4")) %>%
+  mutate(x = c(1, 2.5, 1, 2.5),
+         y = c(2.5, 2.5, 1, 1))
+
+# Elements for assembling the mosaic
+x_c <- tile_types$x
+y_c <- tile_types$y
+type <- as.character(tile_types$tiles)
+
+pmap_dfr(list(x_c, y_c, type), st_truchet_boutique) %>%
+  ggplot() + 
+  geom_sf(color = "black",
+          size = 2) +
+  geom_text(data = tile_types,
+            aes(x = x,
+                y = y,
+                label = c("cloud_1", "cloud_2", "cloud_3", "cloud_4")),
+            nudge_y = 0.6) + 
+  scale_fill_distiller(direction = 1) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("cloud-tiles.png",
+       width = 5,
+       height = 5)
+```
+
 Mosaic ribbons:
 ```{r mosaic-ribbons}
 x_lim <- c(1, 10)
@@ -126,7 +188,7 @@ container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
 # Design mosaic
 tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
                                      y = y_lim[1]:y_lim[2])) %>%
-  mutate(tiles = sample(c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4"),
+  mutate(tiles = sample(c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4"),
                        size = n(),
                        replace = TRUE))
 
@@ -240,6 +302,189 @@ ggsave("silk-1.png",
        height = 5)
 ```
 
+Mosaic rainbow:
+```{r mosaic-rainbow}
+x_lim <- c(1, 10)
+y_lim <- c(1, 10)
+
+# Polygon
+container <- matrix(c(x_lim[1] - 0.5, y_lim[1] - 0.5,
+                      x_lim[1] - 0.5, y_lim[2] + 0.5,
+                      x_lim[2] + 0.5, y_lim[2] + 0.5,
+                      x_lim[2] + 0.5, y_lim[1] - 0.5,
+                      x_lim[1] - 0.5, y_lim[1] - 0.5),
+                    ncol = 2,
+                    byrow = TRUE)
+
+# Convert coordinates to polygons and then to simple features
+container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                          sf::st_sfc()) %>%
+  sf::st_as_sf()
+
+# Design mosaic
+tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
+                                     y = y_lim[1]:y_lim[2])) %>%
+  mutate(tiles = sample(c("rainbow_1", "rainbow_2"),
+                       size = n(),
+                       replace = TRUE))
+
+st_truchet_ss(df = tile_types) %>%
+  st_union() %>%
+  ggplot() + 
+  geom_sf(data = container,
+          color = "#ffd700",
+          fill = "#0057b7",
+          size = 1.5) +
+  geom_sf(color = "#ffd700",
+          size = 0.5) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("rainbow-1.png",
+       width = 5,
+       height = 5)
+```
+
+Mosaic cloud:
+```{r mosaic-cloud}
+x_lim <- c(1, 10)
+y_lim <- c(1, 10)
+
+# Polygon
+container <- matrix(c(x_lim[1] - 0.5, y_lim[1] - 0.5,
+                      x_lim[1] - 0.5, y_lim[2] + 0.5,
+                      x_lim[2] + 0.5, y_lim[2] + 0.5,
+                      x_lim[2] + 0.5, y_lim[1] - 0.5,
+                      x_lim[1] - 0.5, y_lim[1] - 0.5),
+                    ncol = 2,
+                    byrow = TRUE)
+
+# Convert coordinates to polygons and then to simple features
+container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                          sf::st_sfc()) %>%
+  sf::st_as_sf()
+
+# Design mosaic
+tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
+                                     y = y_lim[1]:y_lim[2])) %>%
+  mutate(tiles = sample(c("cloud_1", "cloud_2", "cloud_3", "cloud_4"),
+                       size = n(),
+                       replace = TRUE))
+
+st_truchet_ss(df = tile_types) %>%
+  st_union() %>%
+  ggplot() + 
+  geom_sf(data = container,
+          color = "#ffd700",
+          fill = "#0057b7",
+          size = 1.5) +
+  geom_sf(color = "#ffd700",
+          size = 0.5) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("cloud-1.png",
+       width = 5,
+       height = 5)
+```
+
+Mosaic everything goes:
+```{r}
+x_lim <- c(1, 10)
+y_lim <- c(1, 10)
+
+# Polygon
+container <- matrix(c(x_lim[1] - 0.55, y_lim[1] - 0.55,
+                      x_lim[1] - 0.55, y_lim[2] + 0.55,
+                      x_lim[2] + 0.55, y_lim[2] + 0.55,
+                      x_lim[2] + 0.55, y_lim[1] - 0.55,
+                      x_lim[1] - 0.55, y_lim[1] - 0.55),
+                    ncol = 2,
+                    byrow = TRUE)
+
+# Convert coordinates to polygons and then to simple features
+container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                          sf::st_sfc()) %>%
+  sf::st_as_sf()
+
+# Design mosaic
+tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
+                                     y = y_lim[1]:y_lim[2])) %>%
+  mutate(tiles = sample(c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4",
+                          "paradise_1", "paradise_2", "paradise_3", "paradise_4",
+                          "silk_1", "silk_2", "silk_3", "silk_4",
+                          "rainbow_1", "rainbow_2",
+                          "cloud_1", "cloud_2", "cloud_3", "cloud_4"),
+                       size = n(),
+                       replace = TRUE))
+
+# Assemble mosaic and render
+st_truchet_ss(df = tile_types) %>%
+  st_union() %>%
+  ggplot() + 
+  geom_sf(data = container,
+          color = "#ffd700",
+          fill = "#0057b7",
+          size = 1.5) +
+  geom_sf(color = "#ffd700",
+          size = 0.5) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("all-boutique-1.png",
+       width = 5,
+       height = 5)
+```
+
+Mosaic silky ribbons goes:
+```{r}
+x_lim <- c(1, 10)
+y_lim <- c(1, 10)
+
+# Polygon
+container <- matrix(c(x_lim[1] - 0.55, y_lim[1] - 0.55,
+                      x_lim[1] - 0.55, y_lim[2] + 0.55,
+                      x_lim[2] + 0.55, y_lim[2] + 0.55,
+                      x_lim[2] + 0.55, y_lim[1] - 0.55,
+                      x_lim[1] - 0.55, y_lim[1] - 0.55),
+                    ncol = 2,
+                    byrow = TRUE)
+
+# Convert coordinates to polygons and then to simple features
+container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
+                          sf::st_sfc()) %>%
+  sf::st_as_sf()
+
+# Design mosaic
+tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
+                                     y = y_lim[1]:y_lim[2])) %>%
+  mutate(tiles = sample(c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4",
+                          "silk_1", "silk_2", "silk_3", "silk_4"),
+                       size = n(),
+                       replace = TRUE))
+
+# Assemble mosaic and render
+st_truchet_ss(df = tile_types) %>%
+  st_union() %>%
+  ggplot() + 
+  geom_sf(data = container,
+          color = "#ffd700",
+          fill = "#0057b7",
+          size = 1.5) +
+  geom_sf(color = "#ffd700",
+          size = 0.5) +
+  theme_void() +
+  theme(legend.position = "none")
+
+# Save plot
+ggsave("silk-ribbons-1.png",
+       width = 5,
+       height = 5)
+```
+
 Mosaic with buffers:
 ```{r}
 x_lim <- c(1, 10)
@@ -262,7 +507,7 @@ container <- data.frame(geometry = sf::st_polygon(list(container)) %>%
 # Design mosaic
 tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
                                      y = y_lim[1]:y_lim[2])) %>%
-  mutate(tiles = sample(c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
+  mutate(tiles = sample(c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4",
                          "paradise_1", "paradise_2", "paradise_3", "paradise_4",
                                   "silk_1", "silk_2", "silk_3", "silk_4"),
                        size = n(),
@@ -310,7 +555,7 @@ y_lim <- c(1, 10)
 # Design mosaic
 tile_types <- data.frame(expand.grid(x = x_lim[1]:x_lim[2],
                                      y = y_lim[1]:y_lim[2])) %>%
-  mutate(tiles = sample(c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
+  mutate(tiles = sample(c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4",
                          "dr", "dl"),
                        size = n(),
                        replace = TRUE))

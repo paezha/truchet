@@ -20,9 +20,11 @@ st_truchet_ss <- function(df = NULL, tiles = c("dr", "dl"), xlim = c(1, 3), ylim
 
   # Declare types of tiles for boutique function
   # Boutique
-  boutique <- c("ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4",
+  boutique <- c("ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4",
                 "paradise_1", "paradise_2", "paradise_3", "paradise_4",
-                "silk_1", "silk_2", "silk_3", "silk_4")
+                "silk_1", "silk_2", "silk_3", "silk_4",
+                "rainbow_1", "rainbow_2",
+                "cloud_1", "cloud_2", "cloud_3", "cloud_4")
 
   # Linear
   linear <- c("dl", "dr")

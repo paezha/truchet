@@ -4,14 +4,14 @@
 \alias{st_truchet_boutique}
 \title{Flexible Truchet tiles}
 \usage{
-st_truchet_boutique(x = 0, y = 0, type = "ribbons_1")
+st_truchet_boutique(x = 0, y = 0, type = "ribbon_1")
 }
 \arguments{
 \item{x}{A number with the x coordinate of the center of the tile}
 
 \item{y}{A number with the y coordinate of the center of the tile}
 
-\item{type}{A single character to designate a type of tile; currently supported options are "ribbons_1", "ribbons_2", "ribbons_3", "ribbons_4", "paradise_1", "paradise_2", "paradise_3", "paradise_4", "silk_1", "silk_2", "silk_3", "silk_4"}
+\item{type}{A single character to designate a type of tile; currently supported options are "ribbon_1", "ribbon_2", "ribbon_3", "ribbon_4", "paradise_1", "paradise_2", "paradise_3", "paradise_4", "silk_1", "silk_2", "silk_3", "silk_4", "rainbow_1", "rainbow_2", "cloud_1", "cloud_2", "cloud_3", "cloud_4"}
 }
 \value{
 A data frame with one or more objects of type \code{sf} representing one or more tiles depending on type
@@ -24,6 +24,6 @@ For a discussion of variable tiling patterns see: Robert J.Krawczyk (2020) Infin
 Robert J.Krawczyk (2011) Truchet tilings revisited, Proceedings of ISAMA 2011, 69-77 \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.378.5320&rep=rep1&type=pdf#page=69}
 }
 \examples{
-st_truchet_boutique(type = "ribbons_1")
-st_truchet_boutique(type = "ribbons_2")
+st_truchet_boutique(type = "ribbon_1")
+st_truchet_boutique(type = "ribbon_2")
 }
