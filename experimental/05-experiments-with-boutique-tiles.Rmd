@@ -196,11 +196,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   scale_fill_distiller(direction = 1) +
   theme_void() +
   theme(legend.position = "none")
@@ -242,11 +244,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   scale_fill_distiller(direction = 1) +
   theme_void() +
   theme(legend.position = "none")
@@ -287,11 +291,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   scale_fill_distiller(direction = 1) +
   theme_void() +
   theme(legend.position = "none")
@@ -332,11 +338,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   theme_void() +
   theme(legend.position = "none")
 
@@ -376,11 +384,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   theme_void() +
   theme(legend.position = "none")
 
@@ -425,11 +435,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   theme_void() +
   theme(legend.position = "none")
 
@@ -471,11 +483,13 @@ st_truchet_ss(df = tile_types) %>%
   st_union() %>%
   ggplot() + 
   geom_sf(data = container,
-          color = "#ffd700",
-          fill = "#0057b7",
+          # French plum
+          color = "#850D52",
+          # Philippine yellow
+          fill = "#FEC900",
           size = 1.5) +
-  geom_sf(color = "#ffd700",
-          size = 0.5) +
+  geom_sf(color = "#850D52",
+          size = 1) +
   theme_void() +
   theme(legend.position = "none")
 
