@@ -33,8 +33,8 @@ You can install the development version of truchet from
 
 ``` r
 
-# install.packages("devtools")
-devtools::install_github("paezha/truchet")
+# install.packages("pak")
+pak::pak("paezha/truchet")
 ```
 
 ## Example
@@ -146,14 +146,14 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
                 y = y,
                 label = type),
             nudge_y = 1)
-#> Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.12.2, GDAL 3.11.4, PROJ 9.4.1; sf_use_s2() is TRUE
 ```
 
 ![](reference/figures/README-unnamed-chunk-4-1.png)
 
 The function for creating the tiles takes the x and y coordinates for
 placing the tile, the type of tile, and also a parameter `b`
-(0 \> *b* \> 1) that controls the shape of the diagonal line. In the
+($`0 > b > 1`$) that controls the shape of the diagonal line. In the
 case of tiles “Al” through “Dl” the boundary is made of straight lines.
 In the case of tiles “Ac” through “Dc”, the boundary is a curve created
 using the function `bezier()` from the
