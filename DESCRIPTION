@@ -8,7 +8,6 @@ Description: This package includes utility functions to create Truchet tiles and
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
 URL: https://paezha.github.io/truchet/, https://github.com/paezha/truchet
 BugReports: https://github.com/paezha/truchet/issues
 Imports: 
@@ -33,3 +32,4 @@ VignetteBuilder:
     ggplot2,
     knitr,
     imager
+Config/roxygen2/version: 8.0.0

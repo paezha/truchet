@@ -180,7 +180,7 @@ Notice that the parameter alternates between `b` and `1 - b` to ensure that the 
 
 This example uses an image of Elvis in the jail. Read the image using `imager::load.image()`:
 ```{r read-elvis}
-elvis <- load.image(system.file("extdata", 
+elvis <- imager::load.image(system.file("extdata", 
                                 "elvis.jpg", 
                                 package = "truchet"))
 ```
@@ -195,7 +195,7 @@ This is Elvis doing the [jailhouse rock](https://www.youtube.com/watch?v=gj0Rz-u
 plot(elvis)
 ```
 
-The size of the image means that there are `r 1031 * 1280` pixels. Creating an image with all these pixels is very lengthy, and not very interesting because the high resolution means that the figurative aspect of the mosaic is lost. Instead of working with the original image, here we resize it so that it is 1/5 of its original size:
+The size of the image means that there are `r 1031 * 1280` pixels. Creating an image with all these pixels is very lengthy, and not very interesting because the high resolution means that the figurative aspect of the mosaic is lost. Instead of working with the original image, here we scale it so that its width is 200 pixels:
 ```{r rescale-elvis}
 elvis_rs <- imresize(elvis, scale = 1/15, interpolation = 6)
 ```
@@ -245,7 +245,7 @@ end_time <- Sys.time()
 end_time - start_time
 ```
 
-It takes about 43 seconds to process an image of 61 by 76 pixels.
+It takes two or three minutes to process an image of 61 by 76 pixels.
 
 Since the mosaic is a simple features data frame it can be plotted using `geom_sf()` in {ggplot2}:
 ```{r plot-elvis-mosaic}
@@ -356,7 +356,7 @@ end_time <- Sys.time()
 end_time - start_time
 ```
 
-It takes about 52 seconds to process this mosaic with `r nrow(frida_df)` tiles. This is the resulting mosaic:
+It takes about three minutes to process this mosaic with `r nrow(frida_df)` tiles. This is the resulting mosaic:
 ```{r plot-frida-mosaic}
 mosaic %>%
   ggplot() + 

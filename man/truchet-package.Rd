@@ -6,7 +6,7 @@
 \alias{truchet-package}
 \title{truchet: Package for creating Truchet tiles and random mosaics}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
 This package includes utility functions to create Truchet tiles and arrange them to create mosaics.
 }
@@ -21,6 +21,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Antonio Páez \email{paezha@mcmaster.ca} (\href{https://orcid.org/0000-0001-6912-9919}{ORCID})
+
+Authors:
+\itemize{
+  \item Antonio Páez \email{paezha@mcmaster.ca} (\href{https://orcid.org/0000-0001-6912-9919}{ORCID})
+}
 
 }
 \keyword{internal}
