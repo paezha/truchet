@@ -4,6 +4,7 @@
 # truchet <a href="https://paezha.github.io/truchet/"><img src="man/figures/logo.png" align="right" height="139" /></a>
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 This package offers various functions to create Truchet tiles and to
@@ -41,8 +42,8 @@ You can install the development version of truchet from
 [GitHub](https://github.com/paezha/truchet) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("paezha/truchet")
+# install.packages("pak")
+pak::pak("paezha/truchet")
 ```
 
 ## Example
@@ -93,7 +94,7 @@ pmap_dfr(list(x_c, y_c, type), st_truchet_l) %>%
             nudge_y = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" alt="" width="100%" />
 
 ### Assembling a mosaic
 
@@ -110,7 +111,7 @@ mosaic <- st_truchet_ss(xlim = c(-5, 5),
           size = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
 These tiles are composed of simple feature objects of type “LINESTRING”.
 
@@ -144,16 +145,16 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
                 y = y,
                 label = type),
             nudge_y = 1)
-#> Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.12.2, GDAL 3.11.4, PROJ 9.4.1; sf_use_s2() is TRUE
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
 
 The function for creating the tiles takes the x and y coordinates for
 placing the tile, the type of tile, and also a parameter `b`
-(0 \> *b* \> 1) that controls the shape of the diagonal line. In the
-case of tiles “Al” through “Dl” the boundary is made of straight lines.
-In the case of tiles “Ac” through “Dc”, the boundary is a curve created
+($0 > b > 1$) that controls the shape of the diagonal line. In the case
+of tiles “Al” through “Dl” the boundary is made of straight lines. In
+the case of tiles “Ac” through “Dc”, the boundary is a curve created
 using the function `bezier()` from the
 [{bezier}](https://CRAN.R-project.org/package=bezier) package. The
 following figure illustrate the effect of changing `b`:
@@ -183,7 +184,7 @@ pmap_dfr(list(x_c, y_c, type, b), st_truchet_flex) %>%
             nudge_y = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
 
 ### Assembling a mosaic
 
@@ -199,7 +200,7 @@ st_truchet_fm(xlim = c(-5, 5), ylim = c(-5, 5), b = 0.3) %>%
           size = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
 The tiles are simple feature objects of type “POLYGON”.
 
@@ -223,7 +224,7 @@ st_truchet_p(x = 1, y = 4, type = "dl") %>%
   geom_sf(aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
 ### Tile of type “-” or “-” and “\|” in Carlson’s notation.
 
@@ -239,7 +240,7 @@ st_truchet_p(x = 0, y = 0, type = "|") %>%
   geom_sf(aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
 
 ### Tile of type “f” in Carlson’s notation.
 
@@ -260,7 +261,7 @@ includes identifiers for tiles and colors.
           aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
 
 ### Tile scales
 
@@ -284,7 +285,7 @@ ggplot() +
           aes(fill = factor(color)))
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" alt="" width="100%" />
 
 ### Assembling a mosaic with multi-scale tiles
 
@@ -302,7 +303,7 @@ st_truchet_ms() %>%
           color = NA)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" alt="" width="100%" />
 
 It is possible to create mosaics with tiles of different sizes; the
 parameters `p1`, `p2`, and `p3` control the proportion of tiles at each
@@ -315,7 +316,7 @@ st_truchet_ms(p1 = 0.6, p2 = 0.3, p3 = 0.1) %>%
           color = NA)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" alt="" width="100%" />
 
 Mosaics can use different types of tiles:
 
@@ -326,7 +327,7 @@ st_truchet_ms(tiles = c("-", "|", "dl")) %>%
           color = NA)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
 
 ### Multi-scale tile collection
 
@@ -355,4 +356,4 @@ pmap_dfr(list(x_c, y_c, type, scale_p), st_truchet_p) %>%
             nudge_y = 1)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
