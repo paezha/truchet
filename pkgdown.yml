@@ -1,15 +1,14 @@
-pandoc: 2.7.3
-pkgdown: 2.0.2
+pandoc: 3.8.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  a01-designing-mosaics: a01-designing-mosaics.html
-  a02-tiles-mosaics-as-sf: a02-tiles-mosaics-as-sf.html
-  a03-figurative-mosaics: a03-figurative-mosaics.html
-  a04-figurative-mosaics-variable-width: a04-figurative-mosaics-variable-width.html
-  a05-boutique-collection: a05-boutique-collection.html
-  a06-animated-mosaics: a06-animated-mosaics.html
-last_built: 2022-04-19T01:28Z
+  articles/a01-designing-mosaics: a01-designing-mosaics.html
+  articles/a02-tiles-mosaics-as-sf: a02-tiles-mosaics-as-sf.html
+  articles/a03-figurative-mosaics: a03-figurative-mosaics.html
+  articles/a04-figurative-mosaics-variable-width: a04-figurative-mosaics-variable-width.html
+  articles/a05-boutique-collection: a05-boutique-collection.html
+  articles/a06-animated-mosaics: a06-animated-mosaics.html
+last_built: 2026-07-02T19:03Z
 urls:
   reference: https://paezha.github.io/truchet/reference
   article: https://paezha.github.io/truchet/articles
-
