@@ -1,10 +1,11 @@
 Package: truchet
-Title: Package for creating Truchet tiles and random mosaics
+Title: Truchet Tiles and Random Mosaics in the 'sf' Framework
 Version: 0.0.1.0
 Authors@R: 
     person("Antonio", "Páez", , "paezha@mcmaster.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6912-9919"))
-Description: This package includes utility functions to create Truchet tiles and arrange them to create mosaics.
+Description: Utility functions to create Truchet tiles and arrange them to
+  create mosaics.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -23,11 +24,6 @@ Imports:
     tidyr
 Suggests: 
     rmarkdown,
-    gganimate,
-    ggplot2,
-    knitr,
-    imager
-VignetteBuilder: 
     gganimate,
     ggplot2,
     knitr,

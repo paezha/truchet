@@ -4,11 +4,11 @@
 \name{truchet-package}
 \alias{truchet}
 \alias{truchet-package}
-\title{truchet: Package for creating Truchet tiles and random mosaics}
+\title{truchet: Truchet Tiles and Random Mosaics in the 'sf' Framework}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-This package includes utility functions to create Truchet tiles and arrange them to create mosaics.
+Utility functions to create Truchet tiles and arrange them to create mosaics.
 }
 \seealso{
 Useful links:

@@ -8,4 +8,4 @@
 ^LICENSE\.md$
 ^cran-comments\.md$
 ^experimental$
-^vignettes/articles$
+^vignettes$

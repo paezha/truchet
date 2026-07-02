@@ -20,8 +20,8 @@ A data frame with one or more objects of type \code{sf} representing one or more
 Flexible Truchet tiles
 }
 \note{
-For a discussion of variable tiling patterns see: Robert J.Krawczyk (2020) Infinitely Variable Tiling Patterns: From Truchet to Sol LeWitt Revisited, Patterns, 1:5, 1-4, \url{10.1016/j.patter.2020.100084} and
-Robert J.Krawczyk (2011) Truchet tilings revisited, Proceedings of ISAMA 2011, 69-77 \url{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.378.5320&rep=rep1&type=pdf#page=69}
+For a discussion of variable tiling patterns see: Robert J.Krawczyk (2020) Infinitely Variable Tiling Patterns: From Truchet to Sol LeWitt Revisited, Patterns, 1:5, 1-4, \url{https://www.cell.com/patterns/fulltext/S2666-3899(20)30112-4} and
+Robert J.Krawczyk (2011) Truchet tilings revisited, Proceedings of ISAMA 2011, 69-77 \url{https://silo.tips/download/truchet-tilings-revisited}
 }
 \examples{
 st_truchet_boutique(type = "ribbon_1")
