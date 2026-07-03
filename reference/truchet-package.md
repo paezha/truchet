@@ -1,7 +1,7 @@
-# truchet: Package for creating Truchet tiles and random mosaics
+# truchet: Truchet Tiles and Random Mosaics in the 'sf' Framework
 
-This package includes utility functions to create Truchet tiles and
-arrange them to create mosaics.
+Utility functions to create Truchet tiles and arrange them to create
+mosaics.
 
 ## See also
 

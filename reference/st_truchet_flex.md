@@ -38,7 +38,7 @@ tiles depending on type
 For a discussion of Truchet patterns see: Robert Bosch & Urchin Colley
 (2013) Figurative mosaics from flexible Truchet tiles, Journal of
 Mathematics and the Arts, 7:3-4, 122-135,
-[10.1080/17513472.2013.838830](https://paezha.github.io/truchet/reference/10.1080/17513472.2013.838830)
+<https://doi.org/10.1080/17513472.2013.838830>
 
 ## Examples
 

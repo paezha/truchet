@@ -355,7 +355,7 @@ end_time <- Sys.time()
 
 # Calculate time
 end_time - start_time
-#> Time difference of 42.56782 secs
+#> Time difference of 43.25348 secs
 ```
 
 It takes two or three minutes to process an image of 61 by 76 pixels.
@@ -497,7 +497,7 @@ end_time <- Sys.time()
 
 # Calculate time
 end_time - start_time
-#> Time difference of 57.38361 secs
+#> Time difference of 56.56515 secs
 ```
 
 It takes about three minutes to process this mosaic with 6084 tiles.
