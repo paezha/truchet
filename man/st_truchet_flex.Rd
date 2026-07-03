@@ -22,7 +22,7 @@ A list with one or more objects of type \code{sf} representing one or more tiles
 Flexible Truchet tiles
 }
 \note{
-For a discussion of Truchet patterns see: Robert Bosch & Urchin Colley (2013) Figurative mosaics from flexible Truchet tiles, Journal of Mathematics and the Arts, 7:3-4, 122-135, \url{https://doi.org/10.1080/17513472.2013.838830}
+For a discussion of Truchet patterns see: Robert Bosch & Urchin Colley (2013) Figurative mosaics from flexible Truchet tiles, Journal of Mathematics and the Arts, 7:3-4, 122-135, \doi{10.1080/17513472.2013.838830}
 }
 \examples{
 st_truchet_flex(type = "Al")

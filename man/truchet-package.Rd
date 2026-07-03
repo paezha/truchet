@@ -4,11 +4,11 @@
 \name{truchet-package}
 \alias{truchet}
 \alias{truchet-package}
-\title{truchet: Truchet Tiles and Random Mosaics in the 'sf' Framework}
+\title{truchet: Tiles and Random Mosaics Truchet Style Using the 'sf' Framework}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Utility functions to create Truchet tiles and arrange them to create mosaics.
+Functions to create Truchet tiles, so called after Sébastien Truchet who was the first to describe the patterns obtained by rotating tiles with respect to each other. This form of tiling is described by Smith and Boucher (1987) \url{https://muse.jhu.edu/article/600574}.
 }
 \seealso{
 Useful links:

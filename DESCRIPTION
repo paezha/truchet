@@ -1,11 +1,13 @@
 Package: truchet
-Title: Truchet Tiles and Random Mosaics in the 'sf' Framework
-Version: 0.0.1.0
+Title: Tiles and Random Mosaics Truchet Style Using the 'sf' Framework
+Version: 0.0.1.1
 Authors@R: 
     person("Antonio", "Páez", , "paezha@mcmaster.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6912-9919"))
-Description: Utility functions to create Truchet tiles and arrange them to
-  create mosaics.
+Description: Functions to create Truchet tiles, so called after Sébastien Truchet
+  who was the first to describe the patterns obtained by rotating tiles with respect
+  to each other. This form of tiling is described by Smith and Boucher (1987) 
+  <https://muse.jhu.edu/article/600574>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
