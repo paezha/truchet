@@ -1,7 +1,9 @@
-# truchet: Truchet Tiles and Random Mosaics in the 'sf' Framework
+# truchet: Tiles and Random Mosaics Truchet Style Using the 'sf' Framework
 
-Utility functions to create Truchet tiles and arrange them to create
-mosaics.
+Functions to create Truchet tiles, so called after Sébastien Truchet who
+was the first to describe the patterns obtained by rotating tiles with
+respect to each other. This form of tiling is described by Smith and
+Boucher (1987) <https://muse.jhu.edu/article/600574>.
 
 ## See also
 
