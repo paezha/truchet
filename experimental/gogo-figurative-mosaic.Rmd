@@ -1,0 +1,101 @@
+---
+title: "Figurative Portrait with Truchet Tiles"
+output: html_notebook
+---
+
+Load packages:
+```{r load-packages, warning=FALSE}
+library(ggplot2)
+library(imager)
+library(dplyr)
+library(lwgeom)
+library(MexBrewer)
+library(purrr)
+library(sf)
+library(truchet)
+```
+
+
+## Create a figurative mosaic
+
+Read the image using `imager::load.image()`:
+```{r}
+jn <- load.image("gogo.jpg")
+```
+
+Image info:
+```{r}
+jn
+```
+
+This is the image:
+```{r}
+plot(jn)
+```
+
+Resize image:
+```{r}
+jn_rs <- imresize(jn, scale = 1/15, interpolation = 6)
+jn_rs
+```
+
+Pad:
+```{r}
+jn_rs <- pad(jn_rs, 90, "y", pos = -1) |>
+  pad(22, "y", pos = 1) |>
+  pad(90, "x", pos = -1) |>
+  pad(28, "x", pos = 1) |>
+  plot()
+```
+
+Convert to data frame:
+```{r}
+df <- jn_rs %>% 
+  grayscale() %>% 
+  as.data.frame()
+```
+
+```{r use-photo-to-design-mosaic}
+df <- df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when((x + y) %% 2 == 0 ~ "Al",
+                           (x + y) %% 2 == 1 ~ "Cl"),
+         b = case_when((x + y) %% 2 == 0 ~ 1 - value,
+                       (x + y) %% 2 == 1 ~ value))
+```
+
+Function `st_truchet_fm()` is used to create a mosaic of flexible tiles. Column `b` is scaled to avoid completely white or completely black tiles:
+```{r assemble-mosaic}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% 
+                          mutate(b = b * 0.9999 + 0.00001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Since the mosaic is a simple features data frame it can be plotted using `geom_sf()` in {ggplot2}:
+```{r plot-mosaic}
+mosaic %>% 
+  mutate(color = factor(color)) |>
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_manual(values = c("1" = "white", "2" = "black")) + 
+  coord_sf(expand = FALSE) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave(filename = "gogo.pdf",
+       width = 8.5,
+       height = 11,
+       units = "in")
+```

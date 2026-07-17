@@ -1,0 +1,311 @@
+---
+title: "Figurative Portrait with Truchet Tiles"
+output: html_notebook
+---
+
+Load packages:
+```{r load-packages, warning=FALSE}
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(imager) # Image Processing Library Based on 'CImg'
+library(dplyr) # A Grammar of Data Manipulation
+library(lwgeom) # Bindings to Selected 'liblwgeom' Functions for Simple Features
+library(MexBrewer) # Color Palettes Inspired by Works of Mexican Painters and Muralists
+library(purrr) # Functional Programming Tools
+library(sf) # Simple Features for R
+library(truchet) # Package for creating Truchet tiles and random mosaics
+library(showtext) # Using Fonts More Easily in R Graphs
+library(sysfonts) # Loading Fonts into R
+```
+
+
+## Create a figurative mosaic
+
+Read the image using `imager::load.image()`:
+```{r}
+jn <- load.image("nico-01.jpeg")
+```
+
+Image info:
+```{r}
+jn
+```
+
+This is the image:
+```{r}
+plot(jn)
+```
+
+Resize image:
+```{r}
+jn_rs <- imresize(jn, scale = 1/10, interpolation = 6)
+jn_rs
+```
+
+Pad:
+```{r}
+jn_rs <- pad(jn_rs, 25, "y", pos = -1) |>
+  # pad(22, "y", pos = 1) |>
+  # pad(90, "x", pos = -1) |>
+  # pad(28, "x", pos = 1) |>
+  plot()
+```
+
+Convert to data frame:
+```{r}
+df <- jn_rs %>% 
+  grayscale() %>% 
+  as.data.frame()
+```
+
+```{r use-photo-to-design-mosaic}
+df <- df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when((x + y) %% 2 == 0 ~ "Al",
+                           (x + y) %% 2 == 1 ~ "Cl"),
+         b = case_when((x + y) %% 2 == 0 ~ 1 - value,
+                       (x + y) %% 2 == 1 ~ value))
+```
+
+Add font for text:
+```{r}
+font_add_google("Archivo Black", family = "special")
+```
+
+Function `st_truchet_fm()` is used to create a mosaic of flexible tiles. Column `b` is scaled to avoid completely white or completely black tiles:
+```{r assemble-mosaic}
+# Start a timer
+start_time <- Sys.time()
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% 
+                          mutate(b = b * 0.9999 + 0.00001))
+
+# End timer
+end_time <- Sys.time()
+
+# Calculate time
+end_time - start_time
+```
+
+Since the mosaic is a simple features data frame it can be plotted using `geom_sf()` in {ggplot2}:
+```{r plot-mosaic}
+mosaic %>% 
+  mutate(color = factor(color)) |>
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_manual(values = c("1" = "white", "2" = "black")) + 
+  coord_sf(expand = FALSE) +
+  geom_rect(aes(xmin = 17, xmax = 21.5, ymin = 97.5, ymax = 102.5),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 27, xmax = 31, ymin = 96.5, ymax = 103),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 34, xmax = 38, ymin = 96, ymax = 102),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 34, xmax = 35, ymin = 100, ymax = 102),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 37, xmax = 38, ymin = 100, ymax = 102),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 44, xmax = 48, ymin = 97.5, ymax = 102.5),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 32, y = 110), 
+    label = "SCHRÖDINGER'S CAT IS",
+    family = "special",
+    color = "white",
+    size = 4,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 28, y = 100), 
+    label = "E",
+    family = "special",
+    color = "black",
+    size = 16,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 36, y = 100), 
+    label = "A",
+    family = "special",
+    color = "black",
+    size = 16,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 25, y = 100), 
+    label = "L",
+    family = "special",
+    color = "white",
+    size = 16,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 19.5, y = 100), 
+    label = "D",
+    family = "special",
+    color = "black",
+    size = 16,
+    fontface = "bold") +
+   geom_text(aes(x, y), 
+    data = data.frame(x = 46, y = 100), 
+    label = "D",
+    family = "special",
+    color = "black",
+    size = 16,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 14, y = 100), 
+    label = "A",
+    family = "special",
+    color = "white",
+    size = 16,
+    fontface = "bold") +
+  # geom_text(aes(x, y), 
+  #   data = data.frame(x = 31.5, y = 100), 
+  #   label = "I",
+  #   family = "special",
+  #   color = "white",
+  #   size = 16,
+  #   fontface = "bold") +
+  geom_rect(aes(xmin = 30, xmax = 32.5, ymin = 96, ymax = 104),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 41, y = 100), 
+    label = "V",
+    family = "special",
+    color = "white",
+    size = 16,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 51, y = 100), 
+    label = "E",
+    family = "special",
+    color = "white",
+    size = 16,
+    fontface = "bold") +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.margin=unit(c(0.125, 0.125, 0.125, 0.125), 'in'))
+
+ggsave(filename = "schrodinger-cat.jpeg",
+       width = 8,
+       height = 10,
+       units = "in")
+```
+
+Alternative:
+```{r plot-mosaic-02}
+mosaic %>% 
+  mutate(color = factor(color)) |>
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_manual(values = c("1" = "white", "2" = "black")) + 
+  coord_sf(expand = FALSE) +
+  geom_rect(aes(xmin = 98, xmax = 103, ymin = 15.88, ymax = 24.12),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 107, xmax = 111, ymin = 16.5, ymax = 23),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 113.5, xmax = 118,5, ymin = 16, ymax = 23),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 112, xmax = 115, ymin = 20, ymax = 24.12),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 117, xmax = 118, ymin = 20, ymax = 22),
+    fill = "white",
+    inherit.aes = FALSE) +
+  geom_rect(aes(xmin = 124, xmax = 131, ymin = 15.88, ymax = 24.12),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 112.5, y = 30), 
+    label = "SCHRÖDINGER'S CAT IS",
+    family = "special",
+    color = "black",
+    size = 5.5,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 108.5, y = 20), 
+    label = "E",
+    family = "special",
+    color = "white",
+    size = 17,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 116, y = 20), 
+    label = "A",
+    family = "special",
+    color = "white",
+    size = 17,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 105, y = 20), 
+    label = "L",
+    family = "special",
+    color = "black",
+    size = 17,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 99.5, y = 20), 
+    label = "D",
+    family = "special",
+    color = "white",
+    size = 17,
+    fontface = "bold") +
+   geom_text(aes(x, y), 
+    data = data.frame(x = 126, y = 20), 
+    label = "D",
+    family = "special",
+    color = "white",
+    size = 17,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 94, y = 20), 
+    label = "A",
+    family = "special",
+    color = "black",
+    size = 17,
+    fontface = "bold") +
+  # geom_text(aes(x, y), 
+  #   data = data.frame(x = 31.5, y = 100), 
+  #   label = "I",
+  #   family = "special",
+  #   color = "white",
+  #   size = 17,
+  #   fontface = "bold") +
+  geom_rect(aes(xmin = 110.9, xmax = 113, ymin = 16, ymax = 24),
+    fill = "black",
+    inherit.aes = FALSE) +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 120.5, y = 20), 
+    label = "V",
+    family = "special",
+    color = "black",
+    size = 17,
+    fontface = "bold") +
+  geom_text(aes(x, y), 
+    data = data.frame(x = 132, y = 20), 
+    label = "E",
+    family = "special",
+    color = "black",
+    size = 17,
+    fontface = "bold") +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.margin=unit(c(0.125, 0.125, 0.125, 0.125), 'in'))
+
+ggsave(filename = "schrodinger-cat-02.jpeg",
+       width = 8,
+       height = 10,
+       units = "in")
+```
+

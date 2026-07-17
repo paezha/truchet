@@ -1,0 +1,158 @@
+---
+title: "Figurative Portrait with Truchet Tiles"
+output: html_notebook
+---
+
+Load packages:
+```{r load-packages, warning=FALSE}
+library(ggplot2)
+library(imager)
+library(dplyr)
+library(lwgeom)
+library(MexBrewer)
+library(purrr)
+library(sf)
+library(truchet)
+```
+
+
+## Create a figurative mosaic
+
+Read the image using `imager::load.image()`:
+```{r}
+jn <- load.image("annya-color-Photoroom.jpeg")
+```
+
+Image info:
+```{r}
+jn
+```
+
+This is the image:
+```{r}
+plot(jn)
+```
+
+Resize image:
+```{r}
+jn_rs <- imresize(jn, scale = 1/3, interpolation = 6)
+jn_rs
+```
+
+Pad:
+```{r}
+jn_rs <- jn_rs |>
+  pad(-40, "y", pos = -1, val = "white") |>
+  #pad(22, "y", pos = 1) |>
+  pad(10, "x", pos = -1, val = "white") |>
+  pad(18, "x", pos = 1, val = "white") |>
+  plot()
+```
+
+Convert to data frame:
+```{r}
+df <- jn_rs %>% 
+  grayscale() %>% 
+  as.data.frame()
+```
+
+```{r}
+df_color <- jn_rs %>%
+  as.data.frame(wide="c") %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         hex_color = rgb(c.1,
+                         c.2,
+                         c.3))
+```
+
+```{r}
+# Set seed
+# seed <- 1085
+# set.seed(seed)
+# 
+# # Randomly select tiles
+# tiles <- sample(c("Al", "Bl", "Cl", "Dl"), size = 4, replace = TRUE)
+# 
+# value <- 3/4
+# # Design the mosaic
+# df <- df %>% 
+#   # Reverse the y axis
+#   mutate(y = -(y - max(y)),
+#          tiles = case_when(x %% 2 == 1 & y %% 2 == 0 ~ tiles[1],
+#                            x %% 2 == 0 & y %% 2 == 0 ~ tiles[2],
+#                            x %% 2 == 1 & y %% 2 == 1 ~ tiles[3],
+#                            x %% 2 == 0 & y %% 2 == 1 ~ tiles[4]),
+#          # Important! Notice the adjustment to the values to ensure that the area correctly reflects the underlying darkness value
+#          b = case_when(tiles == "Al" ~ 1- value, 
+#                        tiles == "Bl" ~ 1- value, 
+#                        tiles == "Cl" ~ value, 
+#                        tiles == "Dl" ~ value))
+
+df <- df %>% 
+  # Reverse the y axis
+  mutate(y = -(y - max(y)),
+         # The modulus of x + y can be used to create a checkerboard pattern
+         tiles = case_when((x + y) %% 2 == 0 ~ "Al",
+                           (x + y) %% 2 == 1 ~ "Cl"),
+         b = case_when((x + y) %% 2 == 0 ~ 1 - value,
+                       (x + y) %% 2 == 1 ~ value))
+
+# Assemble mosaic
+mosaic <- st_truchet_fm(df = df %>% mutate(b = b * 0.99 + 0.001))
+
+# Plot
+mosaic %>%
+  ggplot() + 
+  geom_sf(aes(fill = color),
+          color = NA) +
+  scale_fill_distiller(direction = 1) + 
+  coord_sf(expand = FALSE) +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave(filename = "annya-duotone.pdf",
+       width = 8.5,
+       height = 11,
+       units = "in")
+```
+
+Convert color data frame to simple features to use {sf} functionality:
+```{r}
+df_color_sf <- df_color %>%
+  st_as_sf(coords = c("x", "y"))
+```
+
+Borrow color from nearest geometry
+```{r}
+hex_color <- df_color_sf[mosaic %>% 
+                               st_nearest_feature(df_color_sf),] %>%
+  pull(hex_color)
+```
+
+We can now add the hexadecimal colors to the data frame with the mosaic:
+```{r}
+mosaic$hex_color <- hex_color
+```
+
+To plot the mosaic we use the duotone colors to filter part of the tiles. For example, here we filter duotone color 2 and use the hexadecimal colors to fill the polygons:
+```{r}
+mosaic %>%
+  filter(color == 2) %>%
+  ggplot() + 
+  geom_sf(aes(fill = hex_color),
+          color = NA) +
+  scale_fill_identity() +
+  coord_sf(expand = FALSE) +
+  theme_void() +
+  #theme(legend.position = "none") +
+  theme(panel.background = element_rect(fill = "gray95"),
+        legend.position = "none")
+
+ggsave(filename = "annya-color.pdf",
+       width = 8.5,
+       height = 11,
+       units = "in")
+```
+
+
