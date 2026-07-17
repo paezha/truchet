@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   articles/a01-designing-mosaics: a01-designing-mosaics.html
@@ -8,7 +8,7 @@ articles:
   articles/a04-figurative-mosaics-variable-width: a04-figurative-mosaics-variable-width.html
   articles/a05-boutique-collection: a05-boutique-collection.html
   articles/a06-animated-mosaics: a06-animated-mosaics.html
-last_built: 2026-07-03T15:59Z
+last_built: 2026-07-17T20:35Z
 urls:
   reference: https://paezha.github.io/truchet/reference
   article: https://paezha.github.io/truchet/articles
